@@ -1,0 +1,134 @@
+! =====================================================================
+! MECH0074 CW1 - Stage 2: liquid-filled cantilever modal verification
+! Mechanical APDL 2023 R1, SI units (m, kg, s, Pa)
+!
+! Runs 3 lengths (4, 10, 20 m) x 5 meshes (5-80 elements) x 2 cases
+! (empty pipe, LNG-filled pipe) = 30 small modal solves.
+! Writes stage2_results.csv to the working directory with FEM vs
+! Euler-Bernoulli frequencies and % difference.
+!
+! Modelling choices (record in the assumptions log):
+!  - PIPE289 (3-node, Timoshenko: includes shear + rotary inertia)
+!  - Bending restricted to the XY plane; axial (UX) and torsion (ROTX)
+!    suppressed, so the first 6 modes are all in-plane bending modes
+!    and each frequency appears once (no duplicate pairs)
+!  - LNG mass added via an effective steel density:
+!      rho_eff = (m_steel + m_LNG) / A_steel  ~ 17,364 kg/m3
+!    E is unchanged so EI is the real steel value. This slightly
+!    over-states the fluid's rotary inertia (minor; affects only
+!    the higher modes of the short 4 m case).
+!  - Poisson's ratio 0.3 assumed for 304 SS (not given in brief)
+! =====================================================================
+FINISH
+/CLEAR,NOSTART
+/TITLE,MECH0074 Stage 2 - liquid-filled cantilever
+
+! ---------------- inputs ----------------
+DOUT  = 0.813              ! outer diameter [m]
+DINN  = 0.79394            ! inner diameter [m]
+TWALL = (DOUT-DINN)/2      ! wall thickness [m]
+EYM   = 213.233E9          ! Young's modulus at 111 K [Pa] (NIST fit)
+NUP   = 0.3                ! Poisson's ratio (assumed)
+RHOS  = 8000               ! steel density [kg/m3]
+RHOF  = 455                ! LNG density [kg/m3]
+
+PIV   = ACOS(-1)
+ASTL  = PIV/4*(DOUT**2-DINN**2)      ! steel area
+AFLD  = PIV/4*DINN**2                ! fluid area
+IZZ   = PIV/64*(DOUT**4-DINN**4)     ! second moment of area
+MSTL  = RHOS*ASTL                    ! steel mass per m
+MFLD  = RHOF*AFLD                    ! LNG mass per m
+RHOEF = (MSTL+MFLD)/ASTL             ! effective density, filled
+
+*DIM,LLIST,ARRAY,3
+LLIST(1) = 4,10,20
+*DIM,NELIST,ARRAY,5
+NELIST(1) = 5,10,20,40,80
+*DIM,BL,ARRAY,6                      ! cantilever beta_n*L roots
+BL(1) = 1.875104,4.694091,7.854757,10.995541,14.137168,17.278760
+*DIM,FR,ARRAY,6
+
+! ---------------- csv header ----------------
+*CFOPEN,stage2_results,csv
+*VWRITE
+('filled,L_m,n_elem,mode,f_FEM_Hz,f_EB_Hz,diff_pct')
+*CFCLOS
+
+! ---------------- element, section, material ----------------
+/PREP7
+ET,1,PIPE289
+SECTYPE,1,PIPE
+SECDATA,DOUT,TWALL,16
+MP,EX,1,EYM
+MP,PRXY,1,NUP
+
+! ---------------- parameter sweep ----------------
+*DO,IFL,0,1                          ! 0 = empty, 1 = LNG-filled
+  *IF,IFL,EQ,1,THEN
+    RHOUSE = RHOEF
+    MLIN   = MSTL+MFLD
+  *ELSE
+    RHOUSE = RHOS
+    MLIN   = MSTL
+  *ENDIF
+
+  *DO,IL,1,3
+    LCANT = LLIST(IL)
+
+    *DO,IN,1,5
+      NEL = NELIST(IN)
+
+      /PREP7
+      MP,DENS,1,RHOUSE
+      ! clear previous model
+      DDELE,ALL,ALL
+      LCLEAR,ALL
+      LDELE,ALL,,,1
+      NUMCMP,ALL
+      ! geometry and mesh
+      K,1,0,0,0
+      K,2,LCANT,0,0
+      L,1,2
+      LESIZE,ALL,,,NEL
+      TYPE,1
+      MAT,1
+      SECNUM,1
+      LMESH,ALL
+      ! constraints: in-plane (XY) bending only
+      NSEL,ALL
+      D,ALL,UX,0,,,,UZ,ROTX,ROTY
+      ! clamped root
+      NSEL,S,LOC,X,0
+      D,ALL,ALL,0
+      NSEL,ALL
+      FINISH
+
+      /SOLU
+      ANTYPE,MODAL
+      MODOPT,LANB,6
+      MXPAND,6
+      SOLVE
+      *DO,IM,1,6
+        *GET,FR(IM),MODE,IM,FREQ
+      *ENDDO
+      FINISH
+
+      *CFOPEN,stage2_results,csv,,APPEND
+      *DO,IM,1,6
+        FEB = BL(IM)**2/(2*PIV*LCANT**2)*SQRT(EYM*IZZ/MLIN)
+        FFE = FR(IM)
+        DPC = 100*(FFE-FEB)/FEB
+        *VWRITE,IFL,LCANT,NEL,IM,FFE,FEB,DPC
+        (F3.0,',',F6.1,',',F5.0,',',F3.0,',',F14.5,',',F14.5,',',F9.3)
+      *ENDDO
+      *CFCLOS
+
+    *ENDDO
+  *ENDDO
+*ENDDO
+
+! leave the last model (filled, 20 m, 80 elements) loaded for plotting
+/POST1
+SET,FIRST
+/ESHAPE,1
+PLDISP,1

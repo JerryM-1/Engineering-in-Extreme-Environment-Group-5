@@ -1,0 +1,92 @@
+! =====================================================================
+! MECH0074 CW1 - Stage 2: mode-shape figures for the slides
+! Mechanical APDL 2023 R1, SI units
+!
+! Solves ONE case (set below) and writes PNGs of the first NPLOT
+! bending modes: white background, deformed pipe rendered as a tube
+! (/ESHAPE) with the undeformed outline, coloured by lateral
+! displacement UY. Files appear in the working directory as
+! file000.png, file001.png, ... (or <jobname>000.png).
+!
+! Same model and assumptions as stage2_cantilever.inp.
+! Note: mode-shape amplitude is arbitrary (mass-normalised), so the
+! colour scale shows relative shape, not a physical displacement.
+! =====================================================================
+FINISH
+/CLEAR,NOSTART
+
+! ---------------- case to plot ----------------
+LCANT = 20         ! cantilever length [m]: 4, 10 or 20
+NEL   = 40         ! elements (converged per mesh study)
+NPLOT = 4          ! number of modes to plot
+FILLD = 1          ! 1 = LNG-filled, 0 = empty
+
+! ---------------- properties ----------------
+DOUT  = 0.813
+DINN  = 0.79394
+TWALL = (DOUT-DINN)/2
+EYM   = 213.233E9
+NUP   = 0.3
+RHOS  = 8000
+RHOF  = 455
+PIV   = ACOS(-1)
+ASTL  = PIV/4*(DOUT**2-DINN**2)
+AFLD  = PIV/4*DINN**2
+RHOEF = (RHOS*ASTL+FILLD*RHOF*AFLD)/ASTL
+
+/PREP7
+ET,1,PIPE289
+SECTYPE,1,PIPE
+SECDATA,DOUT,TWALL,16
+MP,EX,1,EYM
+MP,PRXY,1,NUP
+MP,DENS,1,RHOEF
+K,1,0,0,0
+K,2,LCANT,0,0
+L,1,2
+LESIZE,ALL,,,NEL
+LMESH,ALL
+D,ALL,UX,0,,,,UZ,ROTX,ROTY
+NSEL,S,LOC,X,0
+D,ALL,ALL,0
+NSEL,ALL
+FINISH
+
+/SOLU
+ANTYPE,MODAL
+MODOPT,LANB,NPLOT
+MXPAND,NPLOT,,,YES
+SOLVE
+FINISH
+
+! ---------------- graphics set-up ----------------
+/RGB,INDEX,100,100,100,0     ! white background ...
+/RGB,INDEX,0,0,0,15          ! ... black text
+/PLOPTS,DATE,0
+/PLOPTS,WP,0
+/TRIAD,OFF
+/ESHAPE,1                    ! draw the pipe as a 3D tube
+/VIEW,1,0,0,1                ! look at the XY bending plane
+/ANG,1
+/AUTO,1
+/EDGE,1,1
+/GFILE,1600                  ! image resolution
+PNGR,COMP,1,-1
+PNGR,ORIENT,HORIZ
+PNGR,COLOR,2
+PNGR,TMOD,1
+
+/POST1
+/SHOW,PNG,,0
+*DO,IM,1,NPLOT
+  *GET,FRQ,MODE,IM,FREQ
+  SET,1,IM
+  /TITLE,Cantilever L = %LCANT% m  -  bending mode %IM%  -  %FRQ% Hz
+  PLNSOL,U,Y,2               ! deformed shape + undeformed outline
+*ENDDO
+/SHOW,CLOSE
+/SHOW,WIN32C                 ! return graphics to the GUI window
+
+! To animate a mode in the GUI for the video:
+!   SET,1,1 then  PlotCtrls > Animate > Mode Shape
+!   then PlotCtrls > Animate > Save Animation (AVI)
