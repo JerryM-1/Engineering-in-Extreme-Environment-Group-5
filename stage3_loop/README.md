@@ -7,6 +7,7 @@
 | Path | What it is |
 |---|---|
 | `ansys/stage3_loop_modal.inp` | Mechanical APDL script. It runs 14 cases and writes `stage3_results.csv`, then exports the baseline bend geometry and mode shapes for Stage 4 as CSVs and saves the mode-shape PNGs. |
+| `python_check/stage3_analysis.py` | Post-processes an ANSYS run: convergence, comparison with the Python model, bend-force checks and figures. It writes `results/<run>/stage3_checks.md` and `figures/<run>/`. |
 | `python_check/stage3_loop_beam_check.py` | An independent 2D frame FE model of the same loop. It uses the ASME B31.3 bend flexibility factor (k ≈ 20) and writes `results/stage3_beam_check.csv`. |
 
 ## How to run
@@ -14,6 +15,13 @@
 1. **ANSYS:** open Mechanical APDL 2023 R1 and point it at an empty folder with *File → Change Directory*. Then load the script with *File → Read Input from… → `stage3_loop_modal.inp`*. Copy the two CSVs and the PNGs into `results/` and `figures/`.
    - **Workbench alternative:** add a *Mechanical APDL* component system, right-click *Analysis → Add Input File*, pick the script, then click *Update*.
 2. **Python:** run `python python_check/stage3_loop_beam_check.py`. It needs numpy and scipy.
+
+## ANSYS runs
+
+| Run | Folder | Notes |
+|---|---|---|
+| v4 | `results/v4_2fourier/`, `figures/v4_2fourier/` | Complete. Mesh converged (≤ 0.6 %), but bend ovalisation **not** converged at the default 2 Fourier terms: mode 1 drops 27 % at 4 terms. Kept as evidence for the convergence study. |
+| v5 | `results/v5/` (to come) | All cases at 8 Fourier terms (the ELBOW290 maximum), with 32 section cells and a 2–8 term sweep (cases 13–18). These are the final results. |
 
 ## Geometry and supports (baseline)
 

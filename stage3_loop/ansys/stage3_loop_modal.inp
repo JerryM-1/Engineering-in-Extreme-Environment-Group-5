@@ -1,5 +1,5 @@
 ! =====================================================================
-! MECH0074 CW1 - Stage 3: expansion-loop in-plane modal analysis
+! MECH0074 CW1 - Stage 3: expansion-loop in-plane modal analysis (v5)
 ! Mechanical APDL 2023 R1, SI units (m, kg, s, Pa)
 !
 ! Runs a table of cases (loop size, guide position, bend element,
@@ -39,8 +39,10 @@
 !  - Internal pressure not applied (modal, unpressurised bends ->
 !    most flexible case; pressure stiffening is discussed separately).
 ! =====================================================================
-FINISH
-/CLEAR,NOSTART
+! (no /CLEAR here: start from a fresh MAPDL session instead)
+/UIS,MSGPOP,3      ! GUI: only errors open a pop-up (warnings/notes do not
+                   ! stop the input file waiting for a click)
+/NERR,,99999999    ! do not stop on accumulated warnings
 /TITLE,MECH0074 Stage 3 - expansion loop modes
 
 ! ---------------- fixed inputs ----------------
@@ -61,30 +63,38 @@ AFLD  = PIV/4*DINN**2
 RHOEF = (RHOS*ASTL+RHOF*AFLD)/ASTL
 
 ! ---------------- case table ----------------
-! columns: 1 H [m], 2 W [m], 3 first-guide distance GD from bend
+! rows: 1 H [m], 2 W [m], 3 first-guide distance GD from bend
 ! tangent [m] (-1 = no guides), 4 BENDEL, 5 element size [m],
 ! 6 elements per 90 deg bend, 7 KEYOPT(2) Fourier terms (ELBOW290)
-NCASE = 14
-*DIM,CS,ARRAY,NCASE,7
+NCASE = 18
+*DIM,CS,ARRAY,7,NCASE   ! one COLUMN per case (APDL fills lists down a column)
+! v5: all ELBOW290 cases use 8 Fourier terms (KEYOPT(2)=8, the maximum).
+! v4 showed 2 terms (the default) is not converged for this thin wall
+! (D/t ~ 85): mode 1 fell 27% from 2 to 4 terms. Cases 13-18 sweep 2-7.
 ! baseline
-CS(1,1)  = 12, 8,  6, 1, 0.25,  8, 2
+CS(1,1)  = 12, 8,  6, 1, 0.25,  8, 8
 ! loop size
-CS(2,1)  =  8, 8,  6, 1, 0.25,  8, 2
-CS(3,1)  = 16, 8,  6, 1, 0.25,  8, 2
-CS(4,1)  = 12, 4,  6, 1, 0.25,  8, 2
-CS(5,1)  = 12, 12, 6, 1, 0.25,  8, 2
+CS(1,2)  =  8, 8,  6, 1, 0.25,  8, 8
+CS(1,3)  = 16, 8,  6, 1, 0.25,  8, 8
+CS(1,4)  = 12, 4,  6, 1, 0.25,  8, 8
+CS(1,5)  = 12, 12, 6, 1, 0.25,  8, 8
 ! guide restraint
-CS(6,1)  = 12, 8,  3, 1, 0.25,  8, 2
-CS(7,1)  = 12, 8, 12, 1, 0.25,  8, 2
-CS(8,1)  = 12, 8, -1, 1, 0.25,  8, 2
-! bend model (no ovalisation)
-CS(9,1)  = 12, 8,  6, 0, 0.25,  8, 2
-! mesh / section checks on the baseline
-CS(10,1) = 12, 8,  6, 1, 0.5,   4, 2
-CS(11,1) = 12, 8,  6, 1, 0.125, 16, 2
-CS(12,1) = 12, 8,  6, 1, 0.25,  16, 2
-CS(13,1) = 12, 8,  6, 1, 0.25,  8, 4
-CS(14,1) = 12, 8,  6, 1, 0.125,  8, 2
+CS(1,6)  = 12, 8,  3, 1, 0.25,  8, 8
+CS(1,7)  = 12, 8, 12, 1, 0.25,  8, 8
+CS(1,8)  = 12, 8, -1, 1, 0.25,  8, 8
+! bend model (PIPE289, no ovalisation)
+CS(1,9)  = 12, 8,  6, 0, 0.25,  8, 8
+! mesh checks on the baseline
+CS(1,10) = 12, 8,  6, 1, 0.5,   4, 8
+CS(1,11) = 12, 8,  6, 1, 0.125, 16, 8
+CS(1,12) = 12, 8,  6, 1, 0.25,  16, 8
+! ovalisation (Fourier-term) convergence on the baseline
+CS(1,13) = 12, 8,  6, 1, 0.25,  8, 2
+CS(1,14) = 12, 8,  6, 1, 0.25,  8, 3
+CS(1,15) = 12, 8,  6, 1, 0.25,  8, 4
+CS(1,16) = 12, 8,  6, 1, 0.25,  8, 5
+CS(1,17) = 12, 8,  6, 1, 0.25,  8, 6
+CS(1,18) = 12, 8,  6, 1, 0.25,  8, 7
 
 *DIM,FR,ARRAY,NMODE
 *DIM,UM,ARRAY,NMODE
@@ -94,14 +104,34 @@ CS(14,1) = 12, 8,  6, 1, 0.125,  8, 2
 ET,1,PIPE289
 ET,2,ELBOW290
 SECTYPE,1,PIPE
-SECDATA,DOUT,TWALL,24
+SECDATA,DOUT,TWALL,32     ! 32 cells around the wall: resolves up to 8 Fourier terms
 MP,EX,1,EYM
 MP,PRXY,1,NUP
 MP,DENS,1,RHOEF
 FINISH
 
-! ---------------- macro: build + solve one case ----------------
-*CREATE,LOOPCASE,MAC
+
+! ---------------- run all cases ----------------
+*CFOPEN,stage3_results,csv
+*VWRITE
+('case,H_m,W_m,guide_dist_m,bend_elbow290,elem_size_m,elem_per_bend,fourier_terms,mode,freq_Hz,max_disp_massnorm')
+*CFCLOS
+
+! case NCASE+1 re-solves the baseline so its model is left in memory
+! for the Stage 4 exports and the plots below
+*DO,IC,1,NCASE+1
+  JC = IC
+  *IF,IC,GT,NCASE,THEN
+    JC = 1
+  *ENDIF
+  HL     = CS(1,JC)
+  WL     = CS(2,JC)
+  GD     = CS(3,JC)
+  BENDEL = CS(4,JC)
+  ESZ    = CS(5,JC)
+  NBND   = CS(6,JC)
+  NFOUR  = CS(7,JC)
+! ---------- build + solve one case ----------
 /PREP7
 DDELE,ALL,ALL
 LCLEAR,ALL
@@ -138,17 +168,22 @@ TYPE,BENDEL+1
 MAT,1
 SECNUM,1
 LMESH,ALL
+! work only with the pipe-centreline nodes (ELBOW290 also creates
+! internal section nodes, which must not receive these constraints)
+LSEL,ALL
+NSLL,S,1
+CM,CLNODE,NODE
 ! in-plane only
-NSEL,ALL
 D,ALL,UZ,0,,,,ROTX,ROTY
 ! anchors at both ends
-NSEL,S,LOC,X,0
+NSEL,R,LOC,X,0
 NSEL,R,LOC,Y,0
 D,ALL,ALL,0
-NSEL,S,LOC,X,XEND
+CMSEL,S,CLNODE
+NSEL,R,LOC,X,XEND
 NSEL,R,LOC,Y,0
 D,ALL,ALL,0
-NSEL,ALL
+CMSEL,S,CLNODE
 ! guides: lateral (UY) restraint, first at GD from the bend tangent,
 ! then every GSPC towards the anchor
 *IF,GD,GT,0,THEN
@@ -161,57 +196,40 @@ NSEL,ALL
     D,NODE(XEND-XG,0,0),UY,0
   *ENDDO
 *ENDIF
+NSEL,ALL
 FINISH
 /SOLU
 ANTYPE,MODAL
 MODOPT,LANB,NMODE
 MXPAND,NMODE,,,YES
 SOLVE
+*DO,IM,1,NMODE
+  *GET,FR(IM),MODE,IM,FREQ
+*ENDDO
 FINISH
 /POST1
 *DO,IM,1,NMODE
   SET,1,IM
-  *GET,FR(IM),MODE,IM,FREQ
+  CMSEL,S,CLNODE
   NSORT,U,SUM
+  NSEL,ALL
   *GET,UM(IM),SORT,,MAX
 *ENDDO
 FINISH
-*END
-
-! ---------------- run all cases ----------------
-*CFOPEN,stage3_results,csv
-*VWRITE
-('case,H_m,W_m,guide_dist_m,bend_elbow290,elem_size_m,elem_per_bend,fourier_terms,mode,freq_Hz,max_disp_massnorm')
-*CFCLOS
-
-*DO,IC,1,NCASE
-  HL     = CS(IC,1)
-  WL     = CS(IC,2)
-  GD     = CS(IC,3)
-  BENDEL = CS(IC,4)
-  ESZ    = CS(IC,5)
-  NBND   = CS(IC,6)
-  NFOUR  = CS(IC,7)
-  *USE,LOOPCASE
-  *CFOPEN,stage3_results,csv,,APPEND
-  *DO,IM,1,NMODE
-    F1 = FR(IM)
-    U1 = UM(IM)
-    *VWRITE,IC,HL,WL,GD,BENDEL,ESZ,NBND,NFOUR,IM,F1,U1
-    (F4.0,',',F6.1,',',F6.1,',',F6.1,',',F3.0,',',F7.3,',',F4.0,',',F3.0,',',F3.0,',',F12.5,',',G14.6)
-  *ENDDO
-  *CFCLOS
+! ---------- write frequencies ----------
+  *IF,IC,LE,NCASE,THEN
+    *CFOPEN,stage3_results,csv,,APPEND
+    *DO,IM,1,NMODE
+      F1 = FR(IM)
+      U1 = UM(IM)
+      *VWRITE,IC,HL,WL,GD,BENDEL,ESZ,NBND,NFOUR,IM,F1,U1
+      (F4.0,',',F6.1,',',F6.1,',',F6.1,',',F3.0,',',F7.3,',',F4.0,',',F3.0,',',F3.0,',',F12.5,',',G14.6)
+    *ENDDO
+    *CFCLOS
+  *ENDIF
 *ENDDO
 
 ! ---------------- baseline: bend stations + mode-shape plots ----------------
-HL     = CS(1,1)
-WL     = CS(1,2)
-GD     = CS(1,3)
-BENDEL = CS(1,4)
-ESZ    = CS(1,5)
-NBND   = CS(1,6)
-NFOUR  = CS(1,7)
-*USE,LOOPCASE
 
 ! developed distance of each bend midpoint from the reservoir end
 QARC = PIV*RBEND/2
@@ -222,34 +240,37 @@ SB4  = SB3+QARC/2+(HL-2*RBEND)+QARC/2
 ! bend arc centres and midpoints; fluid force on a bend acts from the
 ! arc centre towards the corner: F = sqrt(2)*p*A along (ex,ey)
 C45 = SQRT(0.5)
-*DIM,BG,ARRAY,4,8          ! s, xc, yc, xm, ym, ex, ey, turn(+1 left/-1 right)
+*DIM,BG,ARRAY,8,4          ! one COLUMN per bend: s, xc, yc, xm, ym, ex, ey, turn
 BG(1,1) = SB1,LIN-RBEND,RBEND,0,0,C45,-C45,1
-BG(2,1) = SB2,LIN+RBEND,HL-RBEND,0,0,-C45,C45,-1
-BG(3,1) = SB3,LIN+WL-RBEND,HL-RBEND,0,0,C45,C45,-1
-BG(4,1) = SB4,LIN+WL+RBEND,RBEND,0,0,-C45,-C45,1
+BG(1,2) = SB2,LIN+RBEND,HL-RBEND,0,0,-C45,C45,-1
+BG(1,3) = SB3,LIN+WL-RBEND,HL-RBEND,0,0,C45,C45,-1
+BG(1,4) = SB4,LIN+WL+RBEND,RBEND,0,0,-C45,-C45,1
 *DO,IB,1,4
-  BG(IB,4) = BG(IB,2)+RBEND*BG(IB,6)
-  BG(IB,5) = BG(IB,3)+RBEND*BG(IB,7)
+  BG(4,IB) = BG(2,IB)+RBEND*BG(6,IB)
+  BG(5,IB) = BG(3,IB)+RBEND*BG(7,IB)
 *ENDDO
 *CFOPEN,stage3_bend_geometry,csv
 *VWRITE
 ('bend,s_from_reservoir_m,centre_x_m,centre_y_m,mid_x_m,mid_y_m,force_dir_x,force_dir_y,turn_left1_right-1')
 *DO,IB,1,4
-  B1=BG(IB,1)
-  B2=BG(IB,2)
-  B3=BG(IB,3)
-  B4=BG(IB,4)
-  B5=BG(IB,5)
-  B6=BG(IB,6)
-  B7=BG(IB,7)
-  B8=BG(IB,8)
+  B1=BG(1,IB)
+  B2=BG(2,IB)
+  B3=BG(3,IB)
+  B4=BG(4,IB)
+  B5=BG(5,IB)
+  B6=BG(6,IB)
+  B7=BG(7,IB)
+  B8=BG(8,IB)
   *VWRITE,IB,B1,B2,B3,B4,B5,B6,B7,B8
   (F2.0,',',F9.4,',',F9.4,',',F9.4,',',F9.4,',',F9.4,',',F8.4,',',F8.4,',',F3.0)
 *ENDDO
 *CFCLOS
 
-! mode shapes (mass-normalised) at every node and at the bend midpoints
+! mode shapes (mass-normalised) at every centreline node and at the
+! bend midpoints
 /POST1
+CMSEL,S,CLNODE
+/NOPR                      ! suppress echo: these loops write ~5000 lines
 *CFOPEN,stage3_modeshapes_baseline,csv
 *VWRITE
 ('mode,freq_Hz,node,x_m,y_m,UX,UY,ROTZ')
@@ -277,15 +298,17 @@ BG(4,1) = SB4,LIN+WL+RBEND,RBEND,0,0,-C45,-C45,1
   SET,1,IM
   FRQ = FR(IM)
   *DO,IB,1,4
-    ND  = NODE(BG(IB,4),BG(IB,5),0)
+    ND  = NODE(BG(4,IB),BG(5,IB),0)
     UXN = UX(ND)
     UYN = UY(ND)
-    PHF = SQRT(2)*(UXN*BG(IB,6)+UYN*BG(IB,7))
+    PHF = SQRT(2)*(UXN*BG(6,IB)+UYN*BG(7,IB))
     *VWRITE,IM,FRQ,IB,ND,UXN,UYN,PHF
     (F3.0,',',F10.5,',',F2.0,',',F7.0,',',G14.6,',',G14.6,',',G14.6)
   *ENDDO
 *ENDDO
 *CFCLOS
+/GOPR
+NSEL,ALL
 FINISH
 
 /RGB,INDEX,100,100,100,0
@@ -311,4 +334,3 @@ PNGR,TMOD,1
   PLNSOL,U,SUM,2
 *ENDDO
 /SHOW,CLOSE
-/SHOW,WIN32C

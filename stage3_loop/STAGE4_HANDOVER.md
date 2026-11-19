@@ -2,7 +2,7 @@
 
 **Status (19 Nov):**
 - **Geometry and supports:** fixed, unless Frank and Ashmit change the loop size.
-- **Frequencies and mode shapes:** these are **provisional** values from the Python frame model (`python_check/`). The ANSYS ELBOW290 run (`ansys/stage3_loop_modal.inp`) will replace them, and it writes all the CSVs listed at the end.
+- **ANSYS:** run v4 is complete (`results/v4_2fourier/`). Run v5, with converged bend ovalisation, will give the final frequencies.
 
 ## 1. Geometry
 
@@ -31,7 +31,7 @@ The geometry is a plan view in the horizontal XY plane, with flow in the +x dire
 | 3 | 53.700 | (41.802, 10.600) | (42.792, 11.590) | +x → −y, right | (+0.707, +0.707) |
 | 4 | 65.099 | (44.602, 1.400) | (43.612, 0.410) | −y → +x, left | (−0.707, −0.707) |
 
-**Check (uniform pressure):** the four bend forces add to zero (ΣF = 0), and their moments about the origin also add to zero (ΣM = 0). So a uniform pressure loads only the loop's internal stresses. It doesn't move the line as a whole or load the anchors. Only the *differences* in pressure between bends, which come from the wave travel time (Δs/c ≈ 10.4, 6.7 and 10.4 ms), can excite the modes.
+**Check (uniform pressure):** the four bend forces add to zero (ΣF = 0), and their moments about the origin also add to zero (ΣM = 0). So a uniform pressure puts **no net load on the anchors**. It does still push the loop open, though, so it **can** excite the symmetric "loop-opening" modes. Only the antisymmetric modes (1, 3, 5) cancel by symmetry, and those are driven only by pressure *differences* between bends (wave travel times Δs/c ≈ 10.4, 6.7 and 10.4 ms). **Apply the four bend forces individually; don't assume they cancel.**
 
 ## 2. Supports and restraints
 
@@ -50,19 +50,23 @@ The loop itself is unguided. The first guide is 6 m from each loop leg, and the 
 - **How it's applied:** as an effective steel density of 17,364 kg/m³. E is unchanged, so EI is the real steel value.
 - **What that assumes:** the fluid moves rigidly with the pipe in every direction. Fluid–structure interaction is not modelled; Stage 4 brings in the fluid effect through the bend forces.
 
-## 4. Natural frequencies (provisional: Python frame model, B31.3 bend flexibility k = 20)
+## 4. Natural frequencies
 
 | Mode | 1 | 2 | 3 | 4 | 5 | 6 |
 |---|---|---|---|---|---|---|
-| f (Hz) | 1.23 | 2.46 | 3.06 | 11.4 | 13.7 | 14.3 |
+| ANSYS ELBOW290, v4 run (2 ovalisation terms) | 1.81 | 2.67 | 3.61 | 12.7 | 13.8 | 14.0 |
+| ANSYS ELBOW290, 4 ovalisation terms | 1.32 | 2.49 | 3.15 | 12.1 | 13.7 | 13.9 |
+| Python frame model, B31.3 k = 20 | 1.23 | 2.46 | 3.06 | 11.4 | 13.7 | 14.3 |
+| ANSYS PIPE289, stiff bends | 3.41 | 3.49 | 5.02 | 13.6 | 13.9 | 15.0 |
 
-- **Modes 2 and 3 bracket the 2.75 Hz water-hammer fundamental (4L/c), so they are the ones to watch.**
-- **With stiff bends** (no ovalisation), modes 1–3 move to 3.45, 3.55 and 5.07 Hz.
-- **The mode shapes** are in `figures/stage3_python_modes_baseline.png`:
-  - Mode 1: sideways sway of the loop.
-  - Mode 2: the loop "breathing" axially, with the top leg moving in y.
-  - Mode 3: an antisymmetric rocking of the loop.
+- **These are still provisional.** The v4 run showed the bend ovalisation isn't converged at 2 terms. The v5 run uses 8 terms, and its baseline will replace these numbers. Expect mode 1 to come out at about 1.2–1.3 Hz.
+- **Modes 2 and 3 bracket the 2.75 Hz water-hammer fundamental in every model, so they're the ones to watch.**
+- **Mode shapes** (`figures/v4_2fourier/stage3_ansys_modes_baseline.png`):
+  - Mode 1: sideways sway of the loop (antisymmetric).
+  - Mode 2: the loop opening/breathing, with the top leg moving in y (symmetric).
+  - Mode 3: rocking of the loop (antisymmetric).
   - Modes 4–6: higher-order bending of the loop and the guided legs.
+- **Mode shape at each bend:** `results/<run>/stage3_modeshapes_at_bends.csv` gives UX and UY at each bend midpoint and φ·F̂, the modal force per unit pA. `stage3_modeshapes_baseline.csv` gives every centreline node.
 
 ## 5. Files
 
