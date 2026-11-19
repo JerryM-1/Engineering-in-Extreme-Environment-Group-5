@@ -1,0 +1,314 @@
+! =====================================================================
+! MECH0074 CW1 - Stage 3: expansion-loop in-plane modal analysis
+! Mechanical APDL 2023 R1, SI units (m, kg, s, Pa)
+!
+! Runs a table of cases (loop size, guide position, bend element,
+! mesh) and writes:
+!   stage3_results.csv        frequency of modes 1-NMODE for every case
+! then re-solves the baseline and writes, for Stage 4:
+!   stage3_bend_geometry.csv          bend stations s, arc centres,
+!                                     midpoints, force directions, turn
+!   stage3_modeshapes_baseline.csv    UX, UY, ROTZ of every node, modes 1-6
+!   stage3_modeshapes_at_bends.csv    mode shape at each bend midpoint and
+!                                     its projection on the bend force
+! and saves the baseline mode-shape PNGs (file*.png).
+!
+! Geometry (plan view, XY plane = horizontal):
+!
+!                 B2 ---- W ---- B3
+!                  |              |
+!                  H              H
+!                  |              |
+!   A1 ==g==g==== B1              B4 ====g==g== A2
+!   (reservoir end)                       (valve end)
+!
+!   A = anchor (all DOF fixed), g = guide (lateral UY fixed, slides
+!   axially), B = 90 deg tangent bend, radius 1.4 m (brief).
+!   Inlet/outlet legs are sized so the developed length is LTOT
+!   (100 m, the Stage 1 benchmark length) for every loop size.
+!
+! Modelling choices (record in the assumptions log):
+!  - BENDEL=1: ELBOW290 for the whole line (captures bend ovalisation,
+!    i.e. bend flexibility; straight ELBOW290 also lets the tangent
+!    pipe restrain ovalisation naturally). BENDEL=0: PIPE289 throughout
+!    (no ovalisation, stiff bends) - for comparison only.
+!  - In-plane only: UZ, ROTX, ROTY fixed at all nodes (vertical support
+!    from sleepers/shoes; brief asks for in-plane modes).
+!  - Guides: UY fixed at the guide node; axial sliding is frictionless.
+!  - LNG mass via effective density (same as Stage 2).
+!  - Internal pressure not applied (modal, unpressurised bends ->
+!    most flexible case; pressure stiffening is discussed separately).
+! =====================================================================
+FINISH
+/CLEAR,NOSTART
+/TITLE,MECH0074 Stage 3 - expansion loop modes
+
+! ---------------- fixed inputs ----------------
+DOUT  = 0.813
+DINN  = 0.79394
+TWALL = (DOUT-DINN)/2
+EYM   = 213.233E9
+NUP   = 0.3
+RHOS  = 8000
+RHOF  = 455
+RBEND = 1.4          ! bend radius of curvature [m] (brief)
+LTOT  = 100          ! developed length reservoir -> valve [m]
+GSPC  = 12           ! spacing between successive guides [m]
+NMODE = 6            ! modes to extract
+PIV   = ACOS(-1)
+ASTL  = PIV/4*(DOUT**2-DINN**2)
+AFLD  = PIV/4*DINN**2
+RHOEF = (RHOS*ASTL+RHOF*AFLD)/ASTL
+
+! ---------------- case table ----------------
+! columns: 1 H [m], 2 W [m], 3 first-guide distance GD from bend
+! tangent [m] (-1 = no guides), 4 BENDEL, 5 element size [m],
+! 6 elements per 90 deg bend, 7 KEYOPT(2) Fourier terms (ELBOW290)
+NCASE = 14
+*DIM,CS,ARRAY,NCASE,7
+! baseline
+CS(1,1)  = 12, 8,  6, 1, 0.25,  8, 2
+! loop size
+CS(2,1)  =  8, 8,  6, 1, 0.25,  8, 2
+CS(3,1)  = 16, 8,  6, 1, 0.25,  8, 2
+CS(4,1)  = 12, 4,  6, 1, 0.25,  8, 2
+CS(5,1)  = 12, 12, 6, 1, 0.25,  8, 2
+! guide restraint
+CS(6,1)  = 12, 8,  3, 1, 0.25,  8, 2
+CS(7,1)  = 12, 8, 12, 1, 0.25,  8, 2
+CS(8,1)  = 12, 8, -1, 1, 0.25,  8, 2
+! bend model (no ovalisation)
+CS(9,1)  = 12, 8,  6, 0, 0.25,  8, 2
+! mesh / section checks on the baseline
+CS(10,1) = 12, 8,  6, 1, 0.5,   4, 2
+CS(11,1) = 12, 8,  6, 1, 0.125, 16, 2
+CS(12,1) = 12, 8,  6, 1, 0.25,  16, 2
+CS(13,1) = 12, 8,  6, 1, 0.25,  8, 4
+CS(14,1) = 12, 8,  6, 1, 0.125,  8, 2
+
+*DIM,FR,ARRAY,NMODE
+*DIM,UM,ARRAY,NMODE
+
+! ---------------- element types, section, material ----------------
+/PREP7
+ET,1,PIPE289
+ET,2,ELBOW290
+SECTYPE,1,PIPE
+SECDATA,DOUT,TWALL,24
+MP,EX,1,EYM
+MP,PRXY,1,NUP
+MP,DENS,1,RHOEF
+FINISH
+
+! ---------------- macro: build + solve one case ----------------
+*CREATE,LOOPCASE,MAC
+/PREP7
+DDELE,ALL,ALL
+LCLEAR,ALL
+LDELE,ALL,,,1
+NUMCMP,ALL
+KEYOPT,2,2,NFOUR
+! straight legs so that developed length = LTOT
+DRND = 4*(2*RBEND-PIV*RBEND/2)
+LIN  = (LTOT-2*HL-WL+DRND)/2
+XEND = 2*LIN+WL
+K,1,0,0,0
+K,2,LIN,0,0
+K,3,LIN,HL,0
+K,4,LIN+WL,HL,0
+K,5,LIN+WL,0,0
+K,6,XEND,0,0
+L,1,2
+L,2,3
+L,3,4
+L,4,5
+L,5,6
+*GET,NLST,LINE,0,NUM,MAX
+LFILLT,1,2,RBEND
+LFILLT,2,3,RBEND
+LFILLT,3,4,RBEND
+LFILLT,4,5,RBEND
+! straights by size, arcs by divisions
+LSEL,S,LINE,,1,NLST
+LESIZE,ALL,ESZ
+LSEL,S,LINE,,NLST+1,NLST+4
+LESIZE,ALL,,,NBND
+LSEL,ALL
+TYPE,BENDEL+1
+MAT,1
+SECNUM,1
+LMESH,ALL
+! in-plane only
+NSEL,ALL
+D,ALL,UZ,0,,,,ROTX,ROTY
+! anchors at both ends
+NSEL,S,LOC,X,0
+NSEL,R,LOC,Y,0
+D,ALL,ALL,0
+NSEL,S,LOC,X,XEND
+NSEL,R,LOC,Y,0
+D,ALL,ALL,0
+NSEL,ALL
+! guides: lateral (UY) restraint, first at GD from the bend tangent,
+! then every GSPC towards the anchor
+*IF,GD,GT,0,THEN
+  XT1 = LIN-RBEND
+  XT4 = LIN+WL+RBEND
+  *DO,KG,0,20
+    XG = XT1-GD-KG*GSPC
+    *IF,XG,LT,1,EXIT
+    D,NODE(XG,0,0),UY,0
+    D,NODE(XEND-XG,0,0),UY,0
+  *ENDDO
+*ENDIF
+FINISH
+/SOLU
+ANTYPE,MODAL
+MODOPT,LANB,NMODE
+MXPAND,NMODE,,,YES
+SOLVE
+FINISH
+/POST1
+*DO,IM,1,NMODE
+  SET,1,IM
+  *GET,FR(IM),MODE,IM,FREQ
+  NSORT,U,SUM
+  *GET,UM(IM),SORT,,MAX
+*ENDDO
+FINISH
+*END
+
+! ---------------- run all cases ----------------
+*CFOPEN,stage3_results,csv
+*VWRITE
+('case,H_m,W_m,guide_dist_m,bend_elbow290,elem_size_m,elem_per_bend,fourier_terms,mode,freq_Hz,max_disp_massnorm')
+*CFCLOS
+
+*DO,IC,1,NCASE
+  HL     = CS(IC,1)
+  WL     = CS(IC,2)
+  GD     = CS(IC,3)
+  BENDEL = CS(IC,4)
+  ESZ    = CS(IC,5)
+  NBND   = CS(IC,6)
+  NFOUR  = CS(IC,7)
+  *USE,LOOPCASE
+  *CFOPEN,stage3_results,csv,,APPEND
+  *DO,IM,1,NMODE
+    F1 = FR(IM)
+    U1 = UM(IM)
+    *VWRITE,IC,HL,WL,GD,BENDEL,ESZ,NBND,NFOUR,IM,F1,U1
+    (F4.0,',',F6.1,',',F6.1,',',F6.1,',',F3.0,',',F7.3,',',F4.0,',',F3.0,',',F3.0,',',F12.5,',',G14.6)
+  *ENDDO
+  *CFCLOS
+*ENDDO
+
+! ---------------- baseline: bend stations + mode-shape plots ----------------
+HL     = CS(1,1)
+WL     = CS(1,2)
+GD     = CS(1,3)
+BENDEL = CS(1,4)
+ESZ    = CS(1,5)
+NBND   = CS(1,6)
+NFOUR  = CS(1,7)
+*USE,LOOPCASE
+
+! developed distance of each bend midpoint from the reservoir end
+QARC = PIV*RBEND/2
+SB1  = (LIN-RBEND)+QARC/2
+SB2  = SB1+QARC/2+(HL-2*RBEND)+QARC/2
+SB3  = SB2+QARC/2+(WL-2*RBEND)+QARC/2
+SB4  = SB3+QARC/2+(HL-2*RBEND)+QARC/2
+! bend arc centres and midpoints; fluid force on a bend acts from the
+! arc centre towards the corner: F = sqrt(2)*p*A along (ex,ey)
+C45 = SQRT(0.5)
+*DIM,BG,ARRAY,4,8          ! s, xc, yc, xm, ym, ex, ey, turn(+1 left/-1 right)
+BG(1,1) = SB1,LIN-RBEND,RBEND,0,0,C45,-C45,1
+BG(2,1) = SB2,LIN+RBEND,HL-RBEND,0,0,-C45,C45,-1
+BG(3,1) = SB3,LIN+WL-RBEND,HL-RBEND,0,0,C45,C45,-1
+BG(4,1) = SB4,LIN+WL+RBEND,RBEND,0,0,-C45,-C45,1
+*DO,IB,1,4
+  BG(IB,4) = BG(IB,2)+RBEND*BG(IB,6)
+  BG(IB,5) = BG(IB,3)+RBEND*BG(IB,7)
+*ENDDO
+*CFOPEN,stage3_bend_geometry,csv
+*VWRITE
+('bend,s_from_reservoir_m,centre_x_m,centre_y_m,mid_x_m,mid_y_m,force_dir_x,force_dir_y,turn_left1_right-1')
+*DO,IB,1,4
+  B1=BG(IB,1)
+  B2=BG(IB,2)
+  B3=BG(IB,3)
+  B4=BG(IB,4)
+  B5=BG(IB,5)
+  B6=BG(IB,6)
+  B7=BG(IB,7)
+  B8=BG(IB,8)
+  *VWRITE,IB,B1,B2,B3,B4,B5,B6,B7,B8
+  (F2.0,',',F9.4,',',F9.4,',',F9.4,',',F9.4,',',F9.4,',',F8.4,',',F8.4,',',F3.0)
+*ENDDO
+*CFCLOS
+
+! mode shapes (mass-normalised) at every node and at the bend midpoints
+/POST1
+*CFOPEN,stage3_modeshapes_baseline,csv
+*VWRITE
+('mode,freq_Hz,node,x_m,y_m,UX,UY,ROTZ')
+*DO,IM,1,NMODE
+  SET,1,IM
+  FRQ = FR(IM)
+  *GET,NNOD,NODE,0,COUNT
+  ND = 0
+  *DO,J,1,NNOD
+    ND  = NDNEXT(ND)
+    XN  = NX(ND)
+    YN  = NY(ND)
+    UXN = UX(ND)
+    UYN = UY(ND)
+    RZN = ROTZ(ND)
+    *VWRITE,IM,FRQ,ND,XN,YN,UXN,UYN,RZN
+    (F3.0,',',F10.5,',',F7.0,',',F10.4,',',F10.4,',',G14.6,',',G14.6,',',G14.6)
+  *ENDDO
+*ENDDO
+*CFCLOS
+*CFOPEN,stage3_modeshapes_at_bends,csv
+*VWRITE
+('mode,freq_Hz,bend,node,UX,UY,modal_force_component_per_unit_pA')
+*DO,IM,1,NMODE
+  SET,1,IM
+  FRQ = FR(IM)
+  *DO,IB,1,4
+    ND  = NODE(BG(IB,4),BG(IB,5),0)
+    UXN = UX(ND)
+    UYN = UY(ND)
+    PHF = SQRT(2)*(UXN*BG(IB,6)+UYN*BG(IB,7))
+    *VWRITE,IM,FRQ,IB,ND,UXN,UYN,PHF
+    (F3.0,',',F10.5,',',F2.0,',',F7.0,',',G14.6,',',G14.6,',',G14.6)
+  *ENDDO
+*ENDDO
+*CFCLOS
+FINISH
+
+/RGB,INDEX,100,100,100,0
+/RGB,INDEX,0,0,0,15
+/PLOPTS,DATE,0
+/PLOPTS,WP,0
+/TRIAD,OFF
+/ESHAPE,1
+/VIEW,1,0,0,1
+/ANG,1
+/AUTO,1
+/GFILE,1600
+PNGR,COMP,1,-1
+PNGR,ORIENT,HORIZ
+PNGR,COLOR,2
+PNGR,TMOD,1
+/POST1
+/SHOW,PNG,,0
+*DO,IM,1,NMODE
+  SET,1,IM
+  FRQ = FR(IM)
+  /TITLE,Expansion loop (H = %HL% m, W = %WL% m) - in-plane mode %IM% - %FRQ% Hz
+  PLNSOL,U,SUM,2
+*ENDDO
+/SHOW,CLOSE
+/SHOW,WIN32C
