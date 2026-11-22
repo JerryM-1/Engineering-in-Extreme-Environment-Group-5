@@ -3,6 +3,30 @@
 **Question (brief):** does the FEM reproduce liquid-filled pipe bending?
 4, 10 and 20 m cantilevers, first six bending frequencies vs Euler–Bernoulli theory, plus a mesh sensitivity check.
 
+## What we did
+
+- **Model type:** **1D beam (pipe) elements on the pipe centreline, not shells or solids.** Two independent codes were used:
+  - **ANSYS Mechanical APDL 2023 R1 (James, Steve):** PIPE289, a Timoshenko pipe element that includes shear and rotary inertia, with a scripted sweep (`ansys/`).
+  - **Abaqus (teammate):** B23, an Euler–Bernoulli beam element. It matches EB theory to within 0.01 % for all 18 frequencies and reproduces the analytical mode shapes. This verifies the FE set-up itself.
+  - **Python (`python_check/`):** an independent Timoshenko beam FE, used to explain where ANSYS and EB differ.
+- **The LNG is distributed mass, not a distributed load.** It is carried as mass per metre (225.3 kg/m of LNG plus 192.4 kg/m of steel, giving 417.7 kg/m) that moves rigidly with the pipe in bending.
+  - ANSYS applies it through an effective density.
+  - Abaqus applies it as non-structural mass per unit length.
+- **No loads were applied.** A modal analysis has no applied loads, so gravity, the weight of the fluid and internal pressure are not included. They would affect static sag and support loads, not the natural frequencies, and were not part of this stage.
+- **Cases:** 4, 10 and 20 m clamped–free cantilevers, run empty and LNG-filled, with 5, 10, 20, 40 and 80 elements each. The first six in-plane bending modes were extracted.
+- **Figures:**
+
+  | File | What it shows |
+  |---|---|
+  | `figures/stage2_fem_vs_theory.png` | FEM / EB ratio for each mode |
+  | `figures/stage2_EB_slenderness.png` | Difference from EB against the bending half-wavelength / D |
+  | `figures/stage2_mesh_convergence.png` | Mesh convergence |
+  | `figures/stage2_mode_shapes_20m.png` | ANSYS mode shapes for the 20 m case |
+
+### Why a cantilever?
+
+The brief specifies it as a verification case, because it has an exact analytical answer. It is not a model of the real line. In-plane, the loop legs behave somewhat like cantilevers off the guided straight, because the sliding supports do not restrain lateral movement.
+
 ## Contents
 
 | Path | What it is |

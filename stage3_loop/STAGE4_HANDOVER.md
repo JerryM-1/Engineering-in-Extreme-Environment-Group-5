@@ -2,7 +2,7 @@
 
 **Status (19 Nov):**
 - **Geometry and supports:** fixed, unless Frank and Ashmit change the loop size.
-- **ANSYS:** run v4 is complete (`results/v4_2fourier/`). Run v5, with converged bend ovalisation, will give the final frequencies.
+- **ANSYS:** **final results are from run v5** (`results/v5/`), with converged bend ovalisation (8 terms) and a converged mesh.
 
 ## 1. Geometry
 
@@ -50,30 +50,30 @@ The loop itself is unguided. The first guide is 6 m from each loop leg, and the 
 - **How it's applied:** as an effective steel density of 17,364 kg/m³. E is unchanged, so EI is the real steel value.
 - **What that assumes:** the fluid moves rigidly with the pipe in every direction. Fluid–structure interaction is not modelled; Stage 4 brings in the fluid effect through the bend forces.
 
-## 4. Natural frequencies
+## 4. Natural frequencies (final: ANSYS ELBOW290, v5)
 
 | Mode | 1 | 2 | 3 | 4 | 5 | 6 |
 |---|---|---|---|---|---|---|
-| ANSYS ELBOW290, v4 run (2 ovalisation terms) | 1.81 | 2.67 | 3.61 | 12.7 | 13.8 | 14.0 |
-| ANSYS ELBOW290, 4 ovalisation terms | 1.32 | 2.49 | 3.15 | 12.1 | 13.7 | 13.9 |
-| Python frame model, B31.3 k = 20 | 1.23 | 2.46 | 3.06 | 11.4 | 13.7 | 14.3 |
-| ANSYS PIPE289, stiff bends | 3.41 | 3.49 | 5.02 | 13.6 | 13.9 | 15.0 |
+| **f (Hz)** | **1.27** | **2.48** | **3.10** | **11.97** | **13.67** | **13.91** |
+| Shape | sway (antisym.) | loop opening (sym.) | rocking (antisym.) | loop legs in-out (sym.) | guided legs | guided legs |
 
-- **These are still provisional.** The v4 run showed the bend ovalisation isn't converged at 2 terms. The v5 run uses 8 terms, and its baseline will replace these numbers. Expect mode 1 to come out at about 1.2–1.3 Hz.
-- **Modes 2 and 3 bracket the 2.75 Hz water-hammer fundamental in every model, so they're the ones to watch.**
-- **Mode shapes** (`figures/v4_2fourier/stage3_ansys_modes_baseline.png`):
-  - Mode 1: sideways sway of the loop (antisymmetric).
-  - Mode 2: the loop opening/breathing, with the top leg moving in y (symmetric).
-  - Mode 3: rocking of the loop (antisymmetric).
-  - Modes 4–6: higher-order bending of the loop and the guided legs.
-- **Mode shape at each bend:** `results/<run>/stage3_modeshapes_at_bends.csv` gives UX and UY at each bend midpoint and φ·F̂, the modal force per unit pA. `stage3_modeshapes_baseline.csv` gives every centreline node.
+- **Modes 2 and 3 bracket the 2.75 Hz water-hammer fundamental, at −10% and +13%. These are the modes to watch.** Mode 2 is symmetric, so a uniform pressure rise can excite it. Mode 3 needs the pressure differences between bends.
+- **Checks:**
+  - The mesh is converged (≤ 0.5%), and the bend ovalisation is converged (7 → 8 terms changes frequencies by 0.02%).
+  - The results are within 3.3% of the Python B31.3 frame model.
+  - With stiff bends, ANSYS matches the Python model to within 1.9%.
+- **Use these files:**
+  - `results/v5/stage3_modeshapes_at_bends.csv`: UX and UY at each bend midpoint, plus φ·F̂ (modal force per unit pA).
+  - `results/v5/stage3_modeshapes_baseline.csv`: every centreline node.
+  - `figures/v5/stage3_ansys_modes_baseline.png`: mode-shape plots.
+- **Damping:** modal analysis gives none. Stage 4 must choose a damping ratio and test its sensitivity, as the brief asks.
 
 ## 5. Files
 
 Already in the repo:
 - `python_check/stage3_loop_beam_check.py`, the Python frame model
 - `results/stage3_beam_check.csv`, its results
-- `figures/stage3_python_modes_baseline.png`, the provisional mode shapes
+- `figures/stage3_python_modes_baseline.png`, Python frame-model mode shapes (independent check)
 
 From the ANSYS run (to follow):
 

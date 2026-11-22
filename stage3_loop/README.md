@@ -2,6 +2,34 @@
 
 **Question (brief):** how do geometry and supports affect vibration? The task is to show the first six in-plane frequencies and mode shapes, vary the loop dimensions and guide restraints, and justify all restraints and the fluid mass.
 
+## What we did
+
+- **Model type:** **1D pipe elements on the centreline, not shells.**
+  - **ANSYS:** ELBOW290 along the whole line. Its cross-section can ovalise, which captures bend flexibility, and the straight pipe either side naturally restrains that ovalisation.
+  - **Comparison case:** PIPE289 with stiff bends.
+  - **Independent check:** a Python 2D frame model using the ASME B31.3 flexibility factor.
+- **LNG:** included as **distributed mass** (417.7 kg/m in total, moving with the pipe), not as a load. A modal analysis has no applied loads, so gravity, internal pressure and thermal loads are left for Stage 4.
+- **Supports:**
+  - anchors (all DOF fixed) at the reservoir and valve ends;
+  - frictionless sliding guides (lateral movement fixed), with the first guide 6 m from each loop leg and then every 12 m;
+  - vertical support assumed throughout, so the model is in-plane only.
+- **Cases:** loop height 8, 12 and 16 m; width 4, 8 and 12 m; first guide at 3, 6 and 12 m, plus a no-guides case; stiff bends; mesh checks; ovalisation-term convergence (v5).
+- **Outputs:** first six in-plane frequencies and mode shapes, plus bend geometry and mode shapes at the bends for Stage 4. Run `python_check/stage3_analysis.py` to rebuild the checks and figures.
+
+### Model dimensionality (1D / 2D / 3D)
+
+![set-up](figures/stage3_model_schematic.png)
+
+- **The elements are 1D.** Each element is a line along the pipe centreline. The pipe's cross-section (OD 0.813 m, 9.53 mm wall) is a *section property*, not meshed geometry, so there is no shell or solid mesh.
+- **The geometry is 2D.** The centreline lies flat in the horizontal XY plane (plan view of the loop).
+- **The element formulation is 3D.** PIPE289 and ELBOW290 are 3D elements with 6 DOF per node (UX, UY, UZ, ROTX, ROTY, ROTZ). ELBOW290 adds extra *section* DOFs that let the cross-section ovalise, which is what makes the bends flexible.
+- **The response is restricted to 2D in-plane.** UZ, ROTX and ROTY are fixed at every centreline node, so each node only moves in x and y and rotates about z. In effect this is a **2D frame model built from 3D pipe elements**. The Python check (`python_check/stage3_loop_beam_check.py`) is the same idea written directly as a 2D frame.
+- **Viewing the model:** after a run, read `ansys/stage3_view_v1.inp` in the MAPDL GUI. It produces:
+  - the line rendered as a 3D tube, with the supports;
+  - 3D mode shapes;
+  - a close-up of bend B2 ovalising;
+  - an on-screen animation of mode 2.
+
 ## Contents
 
 | Path | What it is |
@@ -14,14 +42,17 @@
 
 1. **ANSYS:** open Mechanical APDL 2023 R1 and point it at an empty folder with *File → Change Directory*. Then load the script with *File → Read Input from… → `stage3_loop_modal.inp`*. Copy the two CSVs and the PNGs into `results/` and `figures/`.
    - **Workbench alternative:** add a *Mechanical APDL* component system, right-click *Analysis → Add Input File*, pick the script, then click *Update*.
-2. **Python:** run `python python_check/stage3_loop_beam_check.py`. It needs numpy and scipy.
+2. **Python:**
+   - `python python_check/stage3_loop_beam_check.py` runs the independent frame model.
+   - `python python_check/stage3_analysis.py v5` runs the checks and figures for the v5 run (use `v4_2fourier` for the old run).
+   - Both need numpy, scipy, pandas and matplotlib.
 
 ## ANSYS runs
 
 | Run | Folder | Notes |
 |---|---|---|
 | v4 | `results/v4_2fourier/`, `figures/v4_2fourier/` | Complete. Mesh converged (≤ 0.6 %), but bend ovalisation **not** converged at the default 2 Fourier terms: mode 1 drops 27 % at 4 terms. Kept as evidence for the convergence study. |
-| v5 | `results/v5/` (to come) | All cases at 8 Fourier terms (the ELBOW290 maximum), with 32 section cells and a 2–8 term sweep (cases 13–18). These are the final results. |
+| **v5 (final)** | `results/v5/`, `figures/v5/` | All cases at 8 Fourier terms (the ELBOW290 maximum), with 32 section cells and a 2–8 term sweep (cases 13–18). Ovalisation is converged (7 → 8 terms: 0.02 %) and the mesh is converged (≤ 0.5 %). Baseline modes 1–6: **1.27, 2.48, 3.10, 11.97, 13.67, 13.91 Hz**. See `results/v5/stage3_checks.md`. |
 
 ## Geometry and supports (baseline)
 
@@ -43,7 +74,7 @@
 | 9 | PIPE289 bends (no ovalisation), to isolate the bend-flexibility effect |
 | 10–14 | Mesh checks: element size, elements per bend, and the number of ELBOW290 Fourier terms |
 
-## Expected results (Python check, before ANSYS)
+## Python frame-model predictions (made before the ANSYS runs)
 
 | Case | Modes 1–6 (Hz) |
 |---|---|

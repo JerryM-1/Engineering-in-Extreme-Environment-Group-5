@@ -1,0 +1,70 @@
+! =====================================================================
+! MECH0074 CW1 - Stage 3 viewer (v1): visual check of the model in MAPDL
+!
+! Use in the MAPDL GUI AFTER a stage3_loop run has finished (the last
+! case solved is the baseline, so it is still in memory). If you ran in
+! batch instead: open MAPDL with the same job name and working folder,
+! then File > Resume Jobname.db, then read this file.
+!
+! Produces on screen (and as viewNNN.png files):
+!   1. 3D tube rendering of the line with support symbols
+!   2. first three mode shapes in 3D (deformed tube + outline)
+!   3. close-up of bend B2 showing the cross-section ovalising
+! then starts an animation of mode 2 (save it with
+! PlotCtrls > Animate > Save Animation).
+! =====================================================================
+/POST1
+/GRAPHICS,FULL         ! full graphics so ELBOW290 section results show
+/RGB,INDEX,100,100,100,0
+/RGB,INDEX,0,0,0,15
+/PLOPTS,DATE,0
+/PLOPTS,WP,0
+/TRIAD,LBOT
+/ESHAPE,1              ! draw the real pipe cross-section (3D tube)
+/TYPE,1,6              ! smooth shaded hidden-surface view
+/VIEW,1,0.35,-1,0.7    ! oblique 3D view of the plan
+/ANG,1
+/AUTO,1
+/GFILE,1600
+PNGR,COMP,1,-1
+PNGR,ORIENT,HORIZ
+PNGR,COLOR,2
+PNGR,TMOD,1
+/SHOW,PNG,,0
+
+! 1. model with supports: anchors (all DOF) and guides (UY) shown as
+!    triangles; the out-of-plane fixity is on every node, so it is
+!    switched off here to keep the picture readable
+/PBC,U,,1
+/TITLE,Stage 3 model: 3D pipe rendering with anchors and guides
+ESEL,ALL
+EPLOT
+/PBC,U,,0
+
+! 2. first three modes in 3D
+*DO,IM,1,3
+  SET,1,IM
+  *GET,FRQ,ACTIVE,0,SET,FREQ
+  /TITLE,Baseline loop - mode %IM% - %FRQ% Hz (deformed tube + undeformed outline)
+  PLNSOL,U,SUM,2
+*ENDDO
+
+! 3. close-up of bend B2 (top-left corner of the loop), mode 2,
+!    to show the bend cross-section ovalising (bend flexibility)
+SET,1,2
+/FOCUS,1,35.6,11.6,0
+/DIST,1,3.5
+/VIEW,1,0.2,-0.6,1
+/DSCALE,1,AUTO
+/TITLE,Bend B2 close-up - mode 2 - ovalising cross-section
+PLNSOL,U,SUM,2
+/SHOW,CLOSE
+/SHOW,WIN32C
+/AUTO,1
+/VIEW,1,0.35,-1,0.7
+
+! animate mode 2 on screen (12 frames, loops; Esc or close the
+! animation controller to stop)
+SET,1,2
+/TITLE,Baseline loop - mode 2
+ANMODE,12,0.05,,0
