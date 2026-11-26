@@ -1,0 +1,6 @@
+peak_U_m,node_at_peak,peak_nominal_Pa,element_at_peak
+  0.827464483039E-01,     745.,  0.185809451676E+08,     166.
+free_anchor_span_contraction_m,sum_RFx_N,sum_RFy_N,sum_Mz_Nm
+  0.199772221372E+00, -0.774266500230E-03,  0.614137025877E-03,  0.298158500809E-01
+peak_bend_SIF_Pa,element,SIF_inplane,loop_width_m
+  0.859819580749E+08,     383.,  0.474258123511E+01,  0.120000000000E+02

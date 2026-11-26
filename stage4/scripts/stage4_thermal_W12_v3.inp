@@ -1,0 +1,294 @@
+! MECH0074 Stage 4 - cooldown only, loop width W=12 m, revision 3
+! v3 adds peak_bend_SIF_Pa (B31.3 in-plane SIF on bend-element bending) to the summary.
+! Corrects endpoint coordinate-selection tolerance and guide reaction export.
+! Adapted from the supplied Stage 3 v5 model.
+! SI units: m, kg, s, Pa. Temperatures use K consistently.
+! Run in a NEW Mechanical APDL system/session and a separate working folder.
+! Linear elastic small-displacement isolated thermal-load case.
+! E at 111 K and constant alpha are used over the whole cooldown.
+! Static pressure and valve transient are subsequent load cases.
+! Nominal longitudinal stress = |N|/A + Ro*sqrt(My^2+Mz^2)/I.
+! It is a beam-resultant envelope, not a code stress or local peak stress.
+! APDL execution must be verified in ANSYS; generated outside ANSYS.
+FINISH
+/UIS,MSGPOP,3
+/TITLE,Stage 4 cooldown 293 K to 111 K, loop width 12 m
+DOUT=0.813
+DINN=0.79394
+TWALL=(DOUT-DINN)/2
+EYM=213.233E9
+NUP=0.3
+RHOS=8000
+RHOF=455
+RBEND=1.4
+LTOT=100
+GSPC=12
+HL=12
+WL=12
+GD=6
+BENDEL=1
+ESZ=0.25
+NBND=8
+NFOUR=8
+ALPH=1.4E-5
+TREFK=293
+TCOLD=111
+PIV=ACOS(-1)
+ASTL=PIV/4*(DOUT**2-DINN**2)
+AFLD=PIV/4*DINN**2
+IZZ=PIV/64*(DOUT**4-DINN**4)
+RHOEF=(RHOS*ASTL+RHOF*AFLD)/ASTL
+/PREP7
+ET,1,PIPE289
+ET,2,ELBOW290
+SECTYPE,1,PIPE
+SECDATA,DOUT,TWALL,32
+MP,EX,1,EYM
+MP,PRXY,1,NUP
+MP,DENS,1,RHOEF
+MP,ALPX,1,ALPH
+TREF,TREFK
+FINISH
+
+/PREP7
+DDELE,ALL,ALL
+LCLEAR,ALL
+LDELE,ALL,,,1
+NUMCMP,ALL
+KEYOPT,2,2,NFOUR
+! straight legs so that developed length = LTOT
+DRND = 4*(2*RBEND-PIV*RBEND/2)
+LIN  = (LTOT-2*HL-WL+DRND)/2
+XEND = 2*LIN+WL
+K,1,0,0,0
+K,2,LIN,0,0
+K,3,LIN,HL,0
+K,4,LIN+WL,HL,0
+K,5,LIN+WL,0,0
+K,6,XEND,0,0
+L,1,2
+L,2,3
+L,3,4
+L,4,5
+L,5,6
+*GET,NLST,LINE,0,NUM,MAX
+LFILLT,1,2,RBEND
+LFILLT,2,3,RBEND
+LFILLT,3,4,RBEND
+LFILLT,4,5,RBEND
+! straights by size, arcs by divisions
+LSEL,S,LINE,,1,NLST
+LESIZE,ALL,ESZ
+LSEL,S,LINE,,NLST+1,NLST+4
+LESIZE,ALL,,,NBND
+LSEL,ALL
+TYPE,BENDEL+1
+MAT,1
+SECNUM,1
+LMESH,ALL
+! work only with the pipe-centreline nodes (ELBOW290 also creates
+! internal section nodes, which must not receive these constraints)
+LSEL,ALL
+NSLL,S,1
+CM,CLNODE,NODE
+! in-plane only
+D,ALL,UZ,0,,,,ROTX,ROTY
+! Fix exactly the two endpoint centreline nodes by ID.
+! Coordinate NSEL at XEND would use a wide default tolerance.
+CMSEL,S,CLNODE
+NANCH1=NODE(0,0,0)
+NANCH2=NODE(XEND,0,0)
+D,NANCH1,ALL,0
+D,NANCH2,ALL,0
+CMSEL,S,CLNODE
+! guides: lateral (UY) restraint, first at GD from the bend tangent,
+! then every GSPC towards the anchor
+*IF,GD,GT,0,THEN
+  XT1 = LIN-RBEND
+  XT4 = LIN+WL+RBEND
+  *DO,KG,0,20
+    XG = XT1-GD-KG*GSPC
+    *IF,XG,LT,1,EXIT
+    D,NODE(XG,0,0),UY,0
+    D,NODE(XEND-XG,0,0),UY,0
+  *ENDDO
+*ENDIF
+NSEL,ALL
+FINISH
+
+! Identify support nodes on the same actual mesh used by Stage 3.
+CMSEL,S,CLNODE
+*DIM,SUPN,ARRAY,44
+NSUP=2
+SUPN(1)=NANCH1
+SUPN(2)=NANCH2
+*DO,KG,0,20
+  XG=LIN-RBEND-GD-KG*GSPC
+  *IF,XG,LT,1,EXIT
+  NSUP=NSUP+1
+  SUPN(NSUP)=NODE(XG,0,0)
+  NSUP=NSUP+1
+  SUPN(NSUP)=NODE(XEND-XG,0,0)
+*ENDDO
+ALLSEL,ALL
+/OUTPUT,stage4_constraint_audit,txt
+CMSEL,S,CLNODE
+DLIST,ALL
+/OUTPUT
+ALLSEL,ALL
+/SOLU
+ANTYPE,STATIC
+NLGEOM,OFF
+TUNIF,TCOLD
+TIME,1
+NSUBST,1
+OUTRES,ALL,ALL
+SOLVE
+FINISH
+SAVE,stage4_cooldown_W12,db
+/POST1
+SET,LAST
+RSYS,0
+CMSEL,S,CLNODE
+*GET,NNOD,NODE,0,COUNT
+*CFOPEN,stage4_thermal_nodes,csv
+*VWRITE
+('node,x_m,y_m,UX_m,UY_m,U_m')
+ND=0
+UMAX=0
+NMAX=0
+*DO,JJ,1,NNOD
+  ND=NDNEXT(ND)
+  XN=NX(ND)
+  YN=NY(ND)
+  UXN=UX(ND)
+  UYN=UY(ND)
+  UMAG=SQRT(UXN**2+UYN**2)
+  *IF,UMAG,GT,UMAX,THEN
+    UMAX=UMAG
+    NMAX=ND
+  *ENDIF
+  *VWRITE,ND,XN,YN,UXN,UYN,UMAG
+  (F9.0,5(',',E20.12))
+*ENDDO
+*CFCLOS
+*CFOPEN,stage4_thermal_supports,csv
+*VWRITE
+('node,x_m,y_m,RFx_N,RFy_N,RMz_Nm')
+SUMFX=0
+SUMFY=0
+SUMMZ=0
+*DO,JJ,1,NSUP
+  ND=SUPN(JJ)
+  XN=NX(ND)
+  YN=NY(ND)
+  ! Clear output variables on every iteration. Guides constrain UY only.
+  RFX=0
+  RFY=0
+  RMZ=0
+  *GET,RFY,NODE,ND,RF,FY
+  *IF,JJ,LE,2,THEN
+    *GET,RFX,NODE,ND,RF,FX
+    *GET,RMZ,NODE,ND,RF,MZ
+  *ENDIF
+  SUMFX=SUMFX+RFX
+  SUMFY=SUMFY+RFY
+  SUMMZ=SUMMZ+RMZ+XN*RFY-YN*RFX
+  *VWRITE,ND,XN,YN,RFX,RFY,RMZ
+  (F9.0,5(',',E20.12))
+*ENDDO
+*CFCLOS
+ALLSEL,ALL
+! ELBOW290 element end force and moment records from the Element Reference.
+ETABLE,NFORI,SMISC,1
+ETABLE,MYI,SMISC,2
+ETABLE,MZI,SMISC,3
+ETABLE,NFORJ,SMISC,36
+ETABLE,MYJ,SMISC,37
+ETABLE,MZJ,SMISC,38
+! ---- v3 addition: B31.3 in-plane SIF stress on the bend elements ----
+*GET,EMAXID,ELEM,0,NUM,MAX
+*DIM,ISB,ARRAY,EMAXID
+LSEL,S,LINE,,NLST+1,NLST+4
+ESLL,S
+*GET,NEB,ELEM,0,COUNT
+EE=0
+*DO,JJ,1,NEB
+  EE=ELNEXT(EE)
+  ISB(EE)=1
+*ENDDO
+ALLSEL,ALL
+HFLEX=TWALL*RBEND/((DOUT-TWALL)/2)**2
+SIFI=0.9/HFLEX**(2/3)
+SBPK=0
+EPKB=0
+*GET,NELEM,ELEM,0,COUNT
+*CFOPEN,stage4_thermal_nominal_stress,csv
+*VWRITE
+('element,N_I_N,My_I_Nm,Mz_I_Nm,N_J_N,My_J_Nm,Mz_J_Nm,Snom_Pa')
+EE=0
+SMAX=0
+EMAX=0
+*DO,JJ,1,NELEM
+  EE=ELNEXT(EE)
+  *GET,NI,ELEM,EE,ETAB,NFORI
+  *GET,MY1,ELEM,EE,ETAB,MYI
+  *GET,MZ1,ELEM,EE,ETAB,MZI
+  *GET,NJ,ELEM,EE,ETAB,NFORJ
+  *GET,MY2,ELEM,EE,ETAB,MYJ
+  *GET,MZ2,ELEM,EE,ETAB,MZJ
+  SI=ABS(NI)/ASTL+DOUT/2*SQRT(MY1**2+MZ1**2)/IZZ
+  SJ=ABS(NJ)/ASTL+DOUT/2*SQRT(MY2**2+MZ2**2)/IZZ
+  SNOM=MAX(SI,SJ)
+  *IF,SNOM,GT,SMAX,THEN
+    SMAX=SNOM
+    EMAX=EE
+  *ENDIF
+  IBND=ISB(EE)
+  *IF,IBND,EQ,1,THEN
+    SBI=ABS(NI)/ASTL+SIFI*DOUT/2*SQRT(MY1**2+MZ1**2)/IZZ
+    SBJ=ABS(NJ)/ASTL+SIFI*DOUT/2*SQRT(MY2**2+MZ2**2)/IZZ
+    SBV=MAX(SBI,SBJ)
+    *IF,SBV,GT,SBPK,THEN
+      SBPK=SBV
+      EPKB=EE
+    *ENDIF
+  *ENDIF
+  *VWRITE,EE,NI,MY1,MZ1,NJ,MY2,MZ2,SNOM
+  (F9.0,7(',',E15.7))
+*ENDDO
+*CFCLOS
+FREEAX=ALPH*(TREFK-TCOLD)*XEND
+*CFOPEN,stage4_thermal_summary,csv
+*VWRITE
+('peak_U_m,node_at_peak,peak_nominal_Pa,element_at_peak')
+*VWRITE,UMAX,NMAX,SMAX,EMAX
+(E20.12,',',F9.0,',',E20.12,',',F9.0)
+*VWRITE
+('free_anchor_span_contraction_m,sum_RFx_N,sum_RFy_N,sum_Mz_Nm')
+*VWRITE,FREEAX,SUMFX,SUMFY,SUMMZ
+(E20.12,3(',',E20.12))
+*VWRITE
+('peak_bend_SIF_Pa,element,SIF_inplane,loop_width_m')
+*VWRITE,SBPK,EPKB,SIFI,WL
+(E20.12,',',F9.0,',',E20.12,',',E20.12)
+*CFCLOS
+/OUTPUT,stage4_thermal_listing,txt
+CMSEL,S,CLNODE
+PRNSOL,U,COMP
+ALLSEL,ALL
+PRESOL,SMISC,1,6
+/OUTPUT
+/RGB,INDEX,100,100,100,0
+/RGB,INDEX,0,0,0,15
+/PLOPTS,DATE,0
+/VIEW,1,0,0,1
+/ESHAPE,1
+/AUTO,1
+/GFILE,1600
+/TITLE,Stage 4 cooldown only - displacement magnitude [m]
+/SHOW,PNG
+PLNSOL,U,SUM
+/SHOW,CLOSE
+ALLSEL,ALL
+FINISH
