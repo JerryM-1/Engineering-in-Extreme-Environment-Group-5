@@ -1,0 +1,4 @@
+peak_incremental_U_m,time_s,node,peak_nominal_total_Pa,element
+  0.4831327478E-01,  0.1626000000E+01,   1564.,  0.1200933592E+09,    511.
+peak_total_support_force_N,peak_incremental_support_force_N,rayleigh_alpha,rayleigh_beta
+  0.4355131461E+06,  0.1185121155E+06,  0.3460318462E+00,  0.1141669184E-02

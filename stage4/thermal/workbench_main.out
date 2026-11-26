@@ -1,0 +1,971 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2024 R1          LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright 1971-2024 Ansys, Inc.  All rights reserved.       *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2024 R1 
+     
+ Point Releases and Patches installed:   
+     
+ Ansys, Inc. License Manager 2024 R1 
+ Discovery 2024 R1   
+ SpaceClaim 2024 R1  
+ Icepak (includes CFD-Post) 2024 R1  
+ Fluids 2024 R1  
+ Ansys Dynamic Reporting 2024 R1 
+ CFD-Post only 2024 R1   
+ CFX (includes CFD-Post) 2024 R1 
+ Chemkin 2024 R1 
+ EnSight 2024 R1 
+ FENSAP-ICE 2024 R1  
+ Fluent (includes CFD-Post) 2024 R1  
+ Polyflow (includes CFD-Post) 2024 R1
+ Forte (includes EnSight) 2024 R1
+ ICEM CFD 2024 R1
+ TurboGrid 2024 R1   
+ ACIS Geometry Interface 2024 R1 
+ AutoCAD Geometry Interface 2024 R1  
+ Catia, Version 4 Geometry Interface 2024 R1 
+ Catia, Version 5 Geometry Interface 2024 R1 
+ Catia, Version 6 Geometry Interface 2024 R1 
+ Creo Elements/Direct Modeling Geometry Interface 2024 R1
+ Creo Parametric Geometry Interface 2024 R1  
+ Inventor Geometry Interface 2024 R1 
+ JTOpen Geometry Interface 2024 R1   
+ NX Geometry Interface 2024 R1   
+ Parasolid Geometry Interface  2024 R1   
+ Solid Edge Geometry Interface 2024 R1   
+ SOLIDWORKS Geometry Interface 2024 R1   
+ Speos 2024 R1   
+ Speos HPC 2024 R1   
+ optiSLang 2024 R1   
+ Remote Solve Manager Standalone Services 2024 R1
+ Additive 2024 R1
+ Aqwa 2024 R1
+ Autodyn 2024 R1 
+ Customization Files for User Programmable Features 2024 R1  
+ LS-DYNA 2024 R1 
+ Material Calibration App 2024 R1
+ Mechanical Products 2024 R1 
+ Motion 2024 R1  
+ Sherlock 2024 R1
+ Sound - SAS 2024 R1 
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  INITIAL JOBNAME              = file                                                                                                                                                                                                                                                    
+  BATCH MODE REQUESTED (-b)    = NOLIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  SHARED MEMORY PARALLEL REQUESTED
+    SINGLE PROCESS WITH   2 THREADS REQUESTED
+    TOTAL OF     2 CORES REQUESTED
+  INPUT FILE NAME              = N:\Desktop\MECH0074_stage4\stage4_ansys_files\dp0\APDL-1\ANSYS\workbench_main.inp
+  OUTPUT FILE NAME             = N:\Desktop\MECH0074_stage4\stage4_ansys_files\dp0\APDL-1\ANSYS\workbench_main.out
+  MEMORY REQUESTED (MB)        = 2048        
+  START-UP FILE MODE           = READ  
+  STOP FILE MODE               = READ  
+  DATABASE SIZE REQUESTED (MB) = 1024        
+
+ RELEASE= 2024 R1              BUILD= 24.1      UP20231106   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file  15:39:24  NOV 24, 2026 CP=      0.078
+
+
+ RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v241\ANSYS\apdl\start.ans
+
+ /INPUT FILE= C:\Program Files\ANSYS Inc\v241\ANSYS\apdl\start.ans  LINE=       0
+
+ /INPUT FILE= stage4_loop_response_v2.inp  LINE=       0
+
+ MESSAGE POPUP LEVEL =    3
+
+ TITLE= 
+ Stage 4 baseline cooldown 293 K to 111 K                                      
+
+
+ PARAMETER DOUT =    0.8130000000    
+
+ PARAMETER DINN =    0.7939400000    
+
+ PARAMETER TWALL =    0.9530000000E-02
+
+ PARAMETER EYM =    0.2132330000E+12
+
+ PARAMETER NUP =    0.3000000000    
+
+ PARAMETER RHOS =     8000.000000    
+
+ PARAMETER RHOF =     455.0000000    
+
+ PARAMETER RBEND =     1.400000000    
+
+ PARAMETER LTOT =     100.0000000    
+
+ PARAMETER GSPC =     12.00000000    
+
+ PARAMETER HL =     12.00000000    
+
+ PARAMETER WL =     8.000000000    
+
+ PARAMETER GD =     6.000000000    
+
+ PARAMETER BENDEL =     1.000000000    
+
+ PARAMETER ESZ =    0.2500000000    
+
+ PARAMETER NBND =     8.000000000    
+
+ PARAMETER NFOUR =     8.000000000    
+
+ PARAMETER ALPH =    0.1400000000E-04
+
+ PARAMETER TREFK =     293.0000000    
+
+ PARAMETER TCOLD =     111.0000000    
+
+ PARAMETER PIV =     3.141592654    
+
+ PARAMETER ASTL =    0.2405539203E-01
+
+ PARAMETER AFLD =    0.4950684466    
+
+ PARAMETER IZZ =    0.1941435102E-02
+
+ PARAMETER RHOEF =     17364.06037    
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2024 R1          24.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00243192  VERSION=WINDOWS x64   15:39:24  NOV 24, 2026 CP=      0.125
+
+ Stage 4 baseline cooldown 293 K to 111 K                                      
+
+
+
+          ***** MAPDL ANALYSIS DEFINITION (PREP7) *****
+
+ *** NOTE ***                            CP =       0.125   TIME= 15:39:24
+ For element type 1 (PIPE289), KEYOPT(4) has been set equal to 1 (thin   
+ pipe theory).  You can reset it to 2 (thick pipe theory) by issuing     
+ the KEYOPT,1,4,2 command.                                               
+
+ ELEMENT TYPE          1 IS PIPE289      3-D 3-NODE PIPE             
+  KEYOPT( 1- 6)=        0      0      0        1      0      0
+  KEYOPT( 7-12)=        0      0      0        0      0      0
+  KEYOPT(13-18)=        0      0      0        0      0      0
+
+ CURRENT NODAL DOF SET IS  UX    UY    UZ    ROTX  ROTY  ROTZ
+  THREE-DIMENSIONAL MODEL
+
+ ELEMENT TYPE          2 IS ELBOW290     3-D 3-NODE ELBOW            
+  KEYOPT( 1- 6)=        0      2      0        0      0      0
+  KEYOPT( 7-12)=        0      0      0        0      0      0
+  KEYOPT(13-18)=        0      0      0        0      0      0
+
+ CURRENT NODAL DOF SET IS  UX    UY    UZ    ROTX  ROTY  ROTZ
+  THREE-DIMENSIONAL MODEL
+                                      
+   INPUT SECTION ID NUMBER               1
+   INPUT SECTION TYPE                 PIPE
+   INPUT PIPE SECTION NAME                    
+                     
+   SECTION ID NUMBER:             1
+   PIPE SECTION NAME IS:             
+   PIPE SECTION DATA SUMMARY:
+    Outside Diameter     = 0.81300    
+    Thickness            = 0.95300E-02
+    Area                 = 0.24055E-01
+    Iyy                  = 0.19414E-02
+    Torsion Constant     = 0.38828E-02
+    Shear Correction-yy  = 0.50012    
+    Num of Circum Cells  =  32
+
+ MATERIAL          1     EX   =  0.2132330E+12  
+
+ MATERIAL          1     PRXY =  0.3000000      
+
+ MATERIAL          1     DENS =   17364.06      
+
+ MATERIAL          1     ALPX =  0.1400000E-04  
+
+ REFERENCE TEMPERATURE= 293.000  (TUNIF= 293.000)
+
+
+ ***** ROUTINE COMPLETED *****  CP =         0.156
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2024 R1          24.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00243192  VERSION=WINDOWS x64   15:39:24  NOV 24, 2026 CP=      0.156
+
+ Stage 4 baseline cooldown 293 K to 111 K                                      
+
+
+
+          ***** MAPDL ANALYSIS DEFINITION (PREP7) *****
+
+ *** NOTE ***                            CP =       0.156   TIME= 15:39:24
+ No nodes defined.                                                       
+
+ *** NOTE ***                            CP =       0.156   TIME= 15:39:24
+ No lines defined.                                                       
+
+ *** WARNING ***                         CP =       0.156   TIME= 15:39:24
+ No lines to delete                                                      
+  Command ignored.                                                       
+
+ COMPRESS NODE NUMBERS
+
+ COMPRESS ELEMENT NUMBERS
+
+ COMPRESS KEYPOINT NUMBERS
+
+ COMPRESS LINE NUMBERS
+
+ COMPRESS AREA NUMBERS
+
+ COMPRESS VOLUME NUMBERS
+
+ COMPRESS MATERIAL NUMBERS
+      MAXIMUM MATERIAL NUMBER COMPRESSED FROM         1 TO         1
+
+ COMPRESS ELEMENT TYPE NUMBERS
+      MAXIMUM ELEMENT TYPE NUMBER COMPRESSED FROM         2 TO         2
+
+ COMPRESS REAL CONSTANT NUMBERS
+
+ COMPRESS SECTION NUMBERS
+      MAXIMUM SECTION NUMBER COMPRESSED FROM         1 TO         1
+
+ COMPRESS COUPLED DOF SET NUMBERS
+
+ COMPRESS CONSTRAINT EQUATION NUMBERS
+
+ COMPRESS COORDINATE SYSTEM NUMBERS
+
+ ELEMENT TYPE       2 IS ELBOW290     3-D 3-NODE ELBOW            
+  KEYOPT( 1- 6)=        0      8      0        0      0      0
+  KEYOPT( 7-12)=        0      0      0        0      0      0
+  KEYOPT(13-18)=        0      0      0        0      0      0
+
+ CURRENT NODAL DOF SET IS  UX    UY    UZ    ROTX  ROTY  ROTZ
+  THREE-DIMENSIONAL MODEL
+
+ PARAMETER DRND =     2.403540570    
+
+ PARAMETER LIN =     35.20177028    
+
+ PARAMETER XEND =     78.40354057    
+
+ KEYPOINT        1                  X,Y,Z=   0.00000       0.00000       0.00000      IN CSYS=        0
+
+ KEYPOINT        2                  X,Y,Z=   35.2018       0.00000       0.00000      IN CSYS=        0
+
+ KEYPOINT        3                  X,Y,Z=   35.2018       12.0000       0.00000      IN CSYS=        0
+
+ KEYPOINT        4                  X,Y,Z=   43.2018       12.0000       0.00000      IN CSYS=        0
+
+ KEYPOINT        5                  X,Y,Z=   43.2018       0.00000       0.00000      IN CSYS=        0
+
+ KEYPOINT        6                  X,Y,Z=   78.4035       0.00000       0.00000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      1     2
+  LINE NO.=     1  KP1=      1  TAN1=   -1.0000   0.0000   0.0000
+                   KP2=      2  TAN2=    1.0000   0.0000   0.0000
+
+ LINE CONNECTS KEYPOINTS      2     3
+  LINE NO.=     2  KP1=      2  TAN1=    0.0000  -1.0000   0.0000
+                   KP2=      3  TAN2=    0.0000   1.0000   0.0000
+
+ LINE CONNECTS KEYPOINTS      3     4
+  LINE NO.=     3  KP1=      3  TAN1=   -1.0000   0.0000   0.0000
+                   KP2=      4  TAN2=    1.0000   0.0000   0.0000
+
+ LINE CONNECTS KEYPOINTS      4     5
+  LINE NO.=     4  KP1=      4  TAN1=    0.0000   1.0000   0.0000
+                   KP2=      5  TAN2=    0.0000  -1.0000   0.0000
+
+ LINE CONNECTS KEYPOINTS      5     6
+  LINE NO.=     5  KP1=      5  TAN1=   -1.0000   0.0000   0.0000
+                   KP2=      6  TAN2=    1.0000   0.0000   0.0000
+
+ *GET  NLST      FROM  LINE  ITEM=NUM  MAX   VALUE=  5.00000000    
+
+ FILLET BETWEEN LINES      1     2  RADIUS=   1.4000    
+  CENTER KEYPOINT=      0
+  LINE NO.=     6  KP1=      7  TAN1=   -1.0000   0.0000   0.0000
+                   KP2=      8  TAN2=    0.0000   1.0000   0.0000
+
+ FILLET BETWEEN LINES      2     3  RADIUS=   1.4000    
+  CENTER KEYPOINT=      0
+  LINE NO.=     7  KP1=      9  TAN1=    0.0000  -1.0000   0.0000
+                   KP2=     10  TAN2=    1.0000   0.0000   0.0000
+
+ FILLET BETWEEN LINES      3     4  RADIUS=   1.4000    
+  CENTER KEYPOINT=      0
+  LINE NO.=     8  KP1=     11  TAN1=   -1.0000  -0.0000   0.0000
+                   KP2=     12  TAN2=    0.0000  -1.0000   0.0000
+
+ FILLET BETWEEN LINES      4     5  RADIUS=   1.4000    
+  CENTER KEYPOINT=      0
+  LINE NO.=     9  KP1=     13  TAN1=    0.0000   1.0000   0.0000
+                   KP2=     14  TAN2=    1.0000   0.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          5 STEP          1
+
+        5  LINES (OF        9  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ SET DIVISIONS ON ALL SELECTED LINES
+      FOR ELEMENT SIZE =  0.25000        SPACING RATIO =     1.0000
+      (KFORCE = 0      PREVIOUS NONZERO VALUES WILL NOT BE ALTERED)
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         6 TO          9 STEP          1
+
+        4  LINES (OF        9  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ SET DIVISIONS ON ALL SELECTED LINES
+      TO  NDIV =    8,  SPACING RATIO =   1.000
+      (KFORCE = 0      PREVIOUS NONZERO VALUES WILL NOT BE ALTERED)
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          9 STEP          1
+
+        9  LINES (OF        9  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ELEMENT TYPE SET TO         2
+
+ MATERIAL NUMBER SET TO         1
+
+ SECTION ID NUMBER=        1
+
+ GENERATE NODES AND ELEMENTS   ON  ALL  SELECTED LINES    
+
+ NUMBER OF LINES MESHED     =         9
+ MAXIMUM NODE NUMBER        =       799
+ MAXIMUM ELEMENT NUMBER     =       399
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          9 STEP          1
+
+        9  LINES (OF        9  DEFINED) SELECTED BY LSEL COMMAND.
+
+ SELECT      ALL NODES (INTERIOR TO LINE, AND AT KEYPOINTS)
+        RELATED TO SELECTED LINE SET.
+
+        799  NODES (OF        799  DEFINED) SELECTED FROM 
+        9 SELECTED LINES BY NSLL COMMAND.
+
+ DEFINITION OF COMPONENT = CLNODE    ENTITY=NODE
+
+ SPECIFIED CONSTRAINT UZ   FOR SELECTED NODES            1 TO         799 BY           1
+ REAL=  0.00000000       IMAG=  0.00000000    
+ ADDITIONAL DOFS=  ROTX  ROTY
+
+ SELECT      COMPONENT CLNODE                                                                                                                                                                                                                                                          
+
+ PARAMETER NANCH1 =     1.000000000    
+
+ PARAMETER NANCH2 =     468.0000000    
+
+ SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO           1 BY           1
+ REAL=  0.00000000       IMAG=  0.00000000    
+ ADDITIONAL DOFS=  UY    UZ    ROTX  ROTY  ROTZ
+
+ SPECIFIED CONSTRAINT UX   FOR SELECTED NODES          468 TO         468 BY           1
+ REAL=  0.00000000       IMAG=  0.00000000    
+ ADDITIONAL DOFS=  UY    UZ    ROTX  ROTY  ROTZ
+
+ SELECT      COMPONENT CLNODE                                                                                                                                                                                                                                                          
+
+ *IF  GD                                ( =   6.00000     )  GT  
+      0                                 ( =   0.00000     )  THEN    
+
+ PARAMETER XT1 =     33.80177028    
+
+ PARAMETER XT4 =     44.60177028    
+
+ *DO LOOP ON PARAMETER= KG FROM  0.0000     TO  20.000     BY  1.0000    
+
+ PARAMETER XG =     27.80177028    
+
+ *IF  XG                                ( =   27.8018     )  LT  
+      1                                 ( =   1.00000     )  EXIT    
+
+ SPECIFIED CONSTRAINT UY   FOR SELECTED NODES          226 TO         226 BY           1
+ REAL=  0.00000000       IMAG=  0.00000000    
+
+ SPECIFIED CONSTRAINT UY   FOR SELECTED NODES          516 TO         516 BY           1
+ REAL=  0.00000000       IMAG=  0.00000000    
+
+ *ENDDO  INDEX= KG                              
+
+ *ENDIF
+
+ ALL SELECT   FOR ITEM=NODE COMPONENT=    
+  IN RANGE         1 TO        799 STEP          1
+
+        799  NODES (OF        799  DEFINED) SELECTED BY NSEL  COMMAND.
+
+
+ ***** ROUTINE COMPLETED *****  CP =         0.172
+
+
+
+ SELECT      COMPONENT CLNODE                                                                                                                                                                                                                                                          
+
+ SET PARAMETER DIMENSIONS ON  SUPN TYPE=ARRA  DIMENSIONS=    44     1     1
+
+ PARAMETER NSUP =     2.000000000    
+
+ PARAMETER SUPN(1) =     1.000000000    
+
+ PARAMETER SUPN(2) =     468.0000000    
+
+ *DO LOOP ON PARAMETER= KG FROM  0.0000     TO  20.000     BY  1.0000    
+
+ PARAMETER XG =     27.80177028    
+
+ *IF  XG                                ( =   27.8018     )  LT  
+      1                                 ( =   1.00000     )  EXIT    
+
+ PARAMETER NSUP =     3.000000000    
+
+ PARAMETER SUPN(NSUP) =     226.0000000    
+
+ PARAMETER NSUP =     4.000000000    
+
+ PARAMETER SUPN(NSUP) =     516.0000000    
+
+ *ENDDO  INDEX= KG                              
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ /OUTPUT FILE= stage4_constraint_audit.txt
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+
+ PERFORM A STATIC ANALYSIS
+  THIS WILL BE A NEW ANALYSIS
+
+ SMALL DEFORMATION ANALYSIS
+
+ UNIFORM TEMPERATURE=   111.000  (TREF=   293.000)
+
+ TIME=  1.0000    
+
+ USE     1 SUBSTEP(S) THIS LOAD STEP FOR ALL  DEGREES OF FREEDOM
+
+ WRITE ALL  ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2024 R1          24.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00243192  VERSION=WINDOWS x64   15:39:24  NOV 24, 2026 CP=      0.188
+
+ Stage 4 baseline cooldown 293 K to 111 K                                      
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . UX   UY   UZ   ROTX ROTY ROTZ
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .STATIC (STEADY-STATE)
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+
+ *** NOTE ***                            CP =       0.188   TIME= 15:39:24
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
+   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .     1
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL        ALL               
+
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+ *** NOTE ***                            CP =       0.406   TIME= 15:39:25
+ Predictor is ON by default for structural elements with rotational      
+ degrees of freedom.  Use the PRED,OFF command to turn the predictor     
+ OFF if it adversely affects the convergence.                            
+
+
+
+                         ***********  PRECISE MASS SUMMARY  ***********
+
+   TOTAL RIGID BODY MASS MATRIX ABOUT ORIGIN
+               Translational mass               |   Coupled translational/rotational mass
+         41770.        0.0000        0.0000     |     0.0000       0.17493E-12   -94224.    
+         0.0000        41770.        0.0000     |   -0.17493E-12    0.0000       0.16375E+07
+         0.0000        0.0000        41770.     |     94224.      -0.16375E+07    0.0000    
+     ------------------------------------------ | ------------------------------------------
+                                                |         Rotational mass (inertia)
+                                                |    0.89492E+06  -0.36937E+07  -0.68810E-11
+                                                |   -0.36937E+07   0.81116E+08  -0.46533E-12
+                                                |   -0.68810E-11  -0.46533E-12   0.82004E+08
+
+   TOTAL MASS =  41770.    
+     The mass principal axes coincide with the global Cartesian axes
+
+   CENTER OF MASS (X,Y,Z)=    39.202        2.2558       0.41879E-17
+
+   TOTAL INERTIA ABOUT CENTER OF MASS
+        0.68237E+06  -0.11176E-07  -0.23515E-13
+       -0.11176E-07   0.16925E+08  -0.70733E-13
+       -0.23515E-13  -0.70733E-13   0.17600E+08
+     The inertia principal axes coincide with the global Cartesian axes
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     2   41769.9    
+
+ Range of element maximum matrix coefficients in global coordinates
+ Maximum = 1.572222439E+11 at element 379.                               
+ Minimum = 1.447982573E+11 at element 194.                               
+
+   *** ELEMENT MATRIX FORMULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        2       399  ELBOW290     10.250   0.025689
+ Time at end of element matrix formulation CP = 5.71875.                 
+
+ *** NOTE ***                            CP =       5.750   TIME= 15:39:28
+ The initial memory allocation (-m) has been exceeded.                   
+  Supplemental memory allocations are being used.                        
+
+ SPARSE MATRIX DIRECT SOLVER.
+  Number of equations =       65506,    Maximum wavefront =    960
+  Memory allocated for solver              =   602.881 MB
+  Memory required for in-core solution     =   582.173 MB
+  Memory required for out-of-core solution =   447.015 MB
+
+ *** NOTE ***                            CP =       6.484   TIME= 15:39:28
+ The Sparse Matrix Solver is currently running in the in-core memory     
+ mode.  This memory mode uses the most amount of memory in order to      
+ avoid using the hard drive as much as possible, which most often        
+ results in the fastest solution time.  This mode is recommended if      
+ enough physical memory is present to accommodate all of the solver      
+ data.                                                                   
+ Sparse solver maximum pivot= 1.214055796E+11 at node 351 UX.            
+ Sparse solver minimum pivot= 2234362.89 at node 315 UY.                 
+ Sparse solver minimum pivot in absolute value= 2234362.89 at node 315   
+ UY.                                                                     
+
+   *** ELEMENT RESULT CALCULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        2       399  ELBOW290      1.453   0.003642
+
+   *** NODAL LOAD CALCULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        2       399  ELBOW290      0.094   0.000235
+ *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      1
+ *** TIME =   1.00000         TIME INC =   1.00000      NEW TRIANG MATRIX
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+       48.750 MB WRITTEN ON ELEMENT SAVED DATA FILE: file.esav
+       26.125 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
+        9.750 MB WRITTEN ON RESULTS FILE: file.rst
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  CP =         8.500
+
+
+
+ ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= stage4_cooldown_v2.db
+  FOR POSSIBLE RESUME FROM THIS POINT
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2024 R1          24.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00243192  VERSION=WINDOWS x64   15:39:30  NOV 24, 2026 CP=      8.594
+
+ Stage 4 baseline cooldown 293 K to 111 K                                      
+
+
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ *** NOTE ***                            CP =       8.594   TIME= 15:39:30
+ Reading results into the database (SET command) will update the current 
+ displacement and force boundary conditions in the database with the     
+ values from the results file for that load set.  Note that any          
+ subsequent solutions will use these values unless action is taken to    
+ either SAVE the current values or not overwrite them (/EXIT,NOSAVE).    
+
+
+ USE LAST SUBSTEP ON RESULT FILE  FOR LOAD CASE 0 
+
+ SET COMMAND GOT LOAD STEP=     1  SUBSTEP=     1  CUMULATIVE ITERATION=     1
+   TIME/FREQUENCY=  1.0000    
+ TITLE= Stage 4 baseline cooldown 293 K to 111 K                                
+
+ RSYS KEY SET TO   0
+
+ USE THE GLOBAL COORDINATE SYSTEM FOR SOLUTION RESULTS
+
+ SELECT      COMPONENT CLNODE                                                                                                                                                                                                                                                          
+
+ *GET  NNOD      FROM  NODE  ITEM=COUN       VALUE=  799.000000     
+
+ OPENED FILE= stage4_thermal_nodes.csv FOR COMMAND FILE DATA 
+
+
+ PARAMETER ND =     0.000000000    
+
+ PARAMETER UMAX =     0.000000000    
+
+ PARAMETER NMAX =     0.000000000    
+
+ *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  799.00     BY  1.0000    
+
+ PARAMETER ND =     1.000000000    
+
+ PARAMETER XN =     0.000000000    
+
+ PARAMETER YN =     0.000000000    
+
+ PARAMETER UXN =     0.000000000    
+
+ PARAMETER UYN =     0.000000000    
+
+ PARAMETER UMAG =     0.000000000    
+
+ *IF  UMAG                              ( =   0.00000     )  GT  
+      UMAX                              ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ *ENDDO  INDEX= JJ                              
+
+  COMMAND FILE CLOSED 
+
+
+ OPENED FILE= stage4_thermal_supports.csv FOR COMMAND FILE DATA 
+
+
+ PARAMETER SUMFX =     0.000000000    
+
+ PARAMETER SUMFY =     0.000000000    
+
+ PARAMETER SUMMZ =     0.000000000    
+
+ *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  8.0000     BY  1.0000    
+
+ PARAMETER ND =     1.000000000    
+
+ PARAMETER XN =     0.000000000    
+
+ PARAMETER YN =     0.000000000    
+
+ PARAMETER RFX =     0.000000000    
+
+ PARAMETER RFY =     0.000000000    
+
+ PARAMETER RMZ =     0.000000000    
+
+ *GET  RFY       FROM  NODE         1  ITEM=RF   FY    VALUE= -2865.50909     
+
+ *IF  JJ                                ( =   1.00000     )  LE  
+      2                                 ( =   2.00000     )  THEN    
+
+ *GET  RFX       FROM  NODE         1  ITEM=RF   FX    VALUE= -14147.4216     
+
+ *GET  RMZ       FROM  NODE         1  ITEM=RF   MZ    VALUE= -3060.13180     
+
+ *ENDIF
+
+ PARAMETER SUMFX =    -14147.42163    
+
+ PARAMETER SUMFY =    -2865.509089    
+
+ PARAMETER SUMMZ =    -3060.131798    
+
+ *ENDDO  INDEX= JJ                              
+
+  COMMAND FILE CLOSED 
+
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ STORE NFORI    FROM ITEM=SMIS COMP=   1  FOR ALL SELECTED ELEMENTS
+
+ STORE MYI      FROM ITEM=SMIS COMP=   2  FOR ALL SELECTED ELEMENTS
+
+ STORE MZI      FROM ITEM=SMIS COMP=   3  FOR ALL SELECTED ELEMENTS
+
+ STORE NFORJ    FROM ITEM=SMIS COMP=  36  FOR ALL SELECTED ELEMENTS
+
+ STORE MYJ      FROM ITEM=SMIS COMP=  37  FOR ALL SELECTED ELEMENTS
+
+ STORE MZJ      FROM ITEM=SMIS COMP=  38  FOR ALL SELECTED ELEMENTS
+
+ *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  399.000000    
+
+ OPENED FILE= stage4_thermal_nominal_stress.csv FOR COMMAND FILE DATA 
+
+
+ PARAMETER EE =     0.000000000    
+
+ PARAMETER SMAX =     0.000000000    
+
+ PARAMETER EMAX =     0.000000000    
+
+ *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  399.00     BY  1.0000    
+
+ PARAMETER EE =     1.000000000    
+
+ *GET  NI        FROM  ELEM         1  ITEM=ETAB NFORI     VALUE=  14147.4219    
+
+ *GET  MY1       FROM  ELEM         1  ITEM=ETAB MYI       VALUE= 0.290603878E-10
+
+ *GET  MZ1       FROM  ELEM         1  ITEM=ETAB MZI       VALUE=  3060.10449    
+
+ *GET  NJ        FROM  ELEM         1  ITEM=ETAB NFORJ     VALUE=  14147.4219    
+
+ *GET  MY2       FROM  ELEM         1  ITEM=ETAB MYJ       VALUE=-0.579318649E-09
+
+ *GET  MZ2       FROM  ELEM         1  ITEM=ETAB MZJ       VALUE=  2347.94604    
+
+ PARAMETER SI =     1228846.866    
+
+ PARAMETER SJ =     1079734.280    
+
+ PARAMETER SNOM =     1228846.866    
+
+ *IF  SNOM                              ( =  0.122885E+07 )  GT  
+      SMAX                              ( =   0.00000     )  THEN    
+
+ PARAMETER SMAX =     1228846.866    
+
+ PARAMETER EMAX =     1.000000000    
+
+ *ENDIF
+
+ *ENDDO  INDEX= JJ                              
+
+  COMMAND FILE CLOSED 
+
+
+ PARAMETER FREEAX =    0.1997722214    
+
+ OPENED FILE= stage4_thermal_summary.csv FOR COMMAND FILE DATA 
+
+
+  COMMAND FILE CLOSED 
+
+
+ /OUTPUT FILE= stage4_thermal_listing.txt
+
+ RED=100% GREEN=100% BLUE=100%
+  for color index  0.
+
+ RED=0% GREEN=0% BLUE=0%
+  for color index 15.
+ DATE/TIME DISPLAY = 0
+
+ view point for window  1    0.0000      0.0000      1.0000    
+
+ ELEMENT DISPLAYS USING REAL CONSTANT OR SECTION DATA WITH FACTOR     1.00
+
+ AUTOMATIC SCALING FOR WINDOW 1
+    DISTANCE AND FOCUS POINT AUTOMATICALLY CALCULATED
+
+ GRAPHICS FILE PIXEL RESOLUTION =   1600
+
+ TITLE= 
+ Stage 4 cooldown only - displacement magnitude [m]                            
+
+
+ /SHOW SWITCH PLOTS TO  PNG         - RASTER MODE.
+
+ DISPLAY NODAL SOLUTION,  ITEM=U     COMP=SUM               
+
+ CUMULATIVE DISPLAY NUMBER   1 WRITTEN TO FILE file000.png       - RASTER MODE.
+ DISPLAY TITLE= 
+ Stage 4 cooldown only - displacement magnitude [m]                      
+
+ *** NOTE ***
+
+  libpng version 1.0.8 - July 24, 2000
+    Copyright (c) 1998-2000 Glenn Randers-Pehrson
+    Copyright (c) 1996, 1997 Andreas Dilger
+    Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.
+
+ ZLIB Version 1.2.13 Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  CP =         9.578
+
+
+
+ /INPUT FILE= write_verify_update.inp  LINE=       0
+
+ *GET  ANSINTER_  FROM  ACTI  ITEM=INT        VALUE=  0.00000000    
+
+ *IF  ANSINTER_                         ( =   0.00000     )  EQ  
+      0                                 ( =   0.00000     )  THEN    
+
+ /OUTPUT FILE= verify_update.out
+
+ *ENDIF
+
+ *GET  ANSINTER_  FROM  ACTI  ITEM=INT        VALUE=  0.00000000    
+
+ *IF  ANSINTER_                         ( =   0.00000     )  EQ  
+      0                                 ( =   0.00000     )  THEN    
+
+ EXIT MAPDL WITHOUT SAVING DATABASE
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          1
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2024 R1            Build: 24.1       Update: UP20231106   Platform: WINDOWS x64 
+Date Run: 11/24/2026   Time: 15:39     Process ID: 16336
+Operating System: Windows 11  (Build: 26100)
+
+Processor Model: Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191125
+          BLAS Library supplied by Intel(R) MKL
+
+Number of machines requested            :    1
+Total number of cores available         :   16
+Number of physical cores available      :    8
+Number of processes requested           :    1
+Number of threads per process requested :    2
+Total number of cores requested         :    2 (Shared Memory Parallel)                    
+
+GPU Acceleration: Not Requested
+
+Job Name: file
+Input File: workbench_main.inp
+Working Directory: N:\Desktop\MECH0074_stage4\stage4_ansys_files\dp0\APDL-1\ANSYS
+
+Total CPU time for main thread                    :        5.1 seconds
+Total CPU time summed for all threads             :        9.6 seconds
+
+Elapsed time spent obtaining a license            :        0.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.1 seconds
+Elapsed time spent solution - preprocessing       :        0.1 seconds
+Elapsed time spent computing solution             :        4.9 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        0.8 seconds
+ 
+Equation solver used                              :            Sparse (symmetric)
+Equation solver computational rate                :       23.9 Gflops
+Equation solver effective I/O rate                :        0.0 GB/sec
+
+Sum of disk space used on all processes           :      108.7 MB
+
+Sum of memory used on all processes               :     1289.0 MB
+Sum of memory allocated on all processes          :     2528.0 MB
+Physical memory available                         :         64 GB
+Total amount of I/O written to disk               :        0.1 GB
+Total amount of I/O read from disk                :        0.1 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2024 R1         Build 24.1         UP20231106    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested       960 MB |
+ |  Maximum Database Used      36 MB     Maximum Scratch Memory Used   1253 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          9.594       Time  =  15:39:31          |
+ |        Elapsed Time (sec) =          9.000       Date  =  11/24/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

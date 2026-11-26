@@ -1,0 +1,4 @@
+peak_U_m,node_at_peak,peak_nominal_Pa,element_at_peak
+  0.877996937119E-01,     745.,  0.196267726050E+08,     174.
+free_anchor_span_contraction_m,sum_RFx_N,sum_RFy_N,sum_Mz_Nm
+  0.199772221372E+00, -0.544819695278E-03, -0.948070701270E-04, -0.342814862961E-02
