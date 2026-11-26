@@ -32,7 +32,7 @@ The W = 8 m run reproduces Jerry's thermal v2 exactly (87.80 mm, 19.63 MPa). The
 
 ### Sensitivity
 
-- **Damping:** at 0.5 % damping the response is about 18 % higher (Python check), which would exceed the limit.
+- **Damping:** at 0.5 % damping the 0.50 s response is about 16 % higher (Python check: 57.3 mm vs 49.2 mm), which would push the stress over the limit.
 - **Wave speed:** a wall-corrected wave speed of about 998 m/s moves the forcing frequency to about 2.5 Hz.
 
 So 0.50 s should be treated as the **minimum** closure time. The recommendation is about 1 s, or detuning mode 3 away from 2.75 Hz.

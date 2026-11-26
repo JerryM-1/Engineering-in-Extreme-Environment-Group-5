@@ -4,13 +4,15 @@ This is the group's computational work for MECH0074 Engineering in Extreme Envir
 
 Each stage folder has its own README covering what was done, how to run it, the assumptions and the key results.
 
+**Making slides?** Start with [`SLIDES_GUIDE.md`](SLIDES_GUIDE.md). It gives a slide-by-slide plan for every stage, with the figure, the message and the numbers to quote.
+
 | Stage | Folder / file | Question (brief) | Status |
 |---|---|---|---|
 | Part A | Part A write-up (shared document) | Why loops are needed; codes; anchors and guides | Draft revised 19 Nov |
-| 1 – Pressure waves | `MECH0074_Stage1_LNG.ipynb` (supplied solver: `water_hammer_valve_closure_and_bend_forces2-3.ipynb`) | Does the MOC solver reproduce the benchmark? | Complete |
+| 1 – Pressure waves | `MECH0074_Stage1_LNG.ipynb` (figures in `stage1_figures/`) (supplied solver: `water_hammer_valve_closure_and_bend_forces2-3.ipynb`) | Does the MOC solver reproduce the benchmark? | Complete |
 | 2 – Cantilever verification | `stage2_cantilever/` | Does the FEM reproduce liquid-filled pipe bending? | Complete |
 | 3 – Loop modes | `stage3_loop/` | How do geometry and supports affect vibration? | Complete (v5, converged): modes 1–6 = 1.27, 2.48, 3.10, 11.97, 13.67, 13.91 Hz |
-| 4 – Coupled response | *(Jerry, in progress)* | Bend forces → loop response, modifications, codes | Started; inputs in `stage3_loop/STAGE4_HANDOVER.md` |
+| 4 – Coupled response | `stage4/` | Bend forces → loop response, modifications, codes | Complete: 0.50 s closure passes B31.3 at 96 %; 0.02 s and 0.10 s closures and the 12 m loop fail (see `stage4/README.md`) |
 
 ## Stage 1 – Pressure waves (summary)
 

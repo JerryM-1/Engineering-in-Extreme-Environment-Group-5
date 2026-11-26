@@ -1,0 +1,57 @@
+! =====================================================================
+! MECH0074 Stage 4 - contour plots from a FINISHED MSUP transient run
+! (stage4_closure_0p50_v2 or stage4_loop_width_12m_0p02_v2).
+!
+! Start a NEW Mechanical APDL session with:
+!   Working Directory = the folder holding that run's file.rst
+!       (Workbench: ...\<project>_files\dp0\APDL\ANSYS)
+!   Job Name = plots          (any name except "file", avoids the lock)
+! then File > Read Input from... this script, Run it in the GUI: batch-mode PNGs
+! come out as plain lines without colour. If the results file is not
+! called file.rst, change FILE,file,rst below to its name.
+! Set TPLOT below to the time of interest (0.50 s run: 1.625, W12 run: 1.992).
+!
+! The expansion pass saved displacements and element forces only, so these
+! are DYNAMIC (incremental, from the pre-closure state) results:
+!   1. deformed 3D tube coloured by displacement magnitude
+!   2. bending moment Mz along the line (line contour)
+! Writes plots000.png, plots001.png ...
+! =====================================================================
+TPLOT=1.625
+/POST1
+FILE,file,rst
+SET,,,,,TPLOT
+*GET,TACT,ACTIVE,0,SET,TIME
+/RGB,INDEX,100,100,100,0
+/RGB,INDEX,0,0,0,15
+/PLOPTS,DATE,0
+/PLOPTS,WP,0
+/TRIAD,OFF
+/ESHAPE,1
+/VIEW,1,0,0,1
+/AUTO,1
+/GFILE,1600
+PNGR,COMP,1,-1
+PNGR,ORIENT,HORIZ
+PNGR,COLOR,2
+PNGR,TMOD,1
+/SHOW,PNG,,0
+/DSCALE,1,30
+/TITLE,Water hammer response at t = %TACT% s - dynamic displacement (m), deformed x30
+PLNSOL,U,SUM,2
+/VIEW,1,0.3,-1,0.8
+/TITLE,Water hammer response at t = %TACT% s - dynamic displacement (m), 3D view, x30
+PLNSOL,U,SUM,2
+/DSCALE,1,1
+/ESHAPE,0
+/VIEW,1,0,0,1
+ETABLE,ERAS
+ETABLE,MZI,SMISC,3
+ETABLE,MZJ,SMISC,38
+/TITLE,Water hammer response at t = %TACT% s - dynamic bending moment Mz (N m)
+PLLS,MZI,MZJ,1
+/SHOW,CLOSE
+FINISH
+! Animation for the video (GUI): PlotCtrls > Animate > Over Time...
+!   (e.g. 100 frames, 0 to 2 s, Result data: DOF solution USUM),
+! then PlotCtrls > Animate > Save Animation (.avi).

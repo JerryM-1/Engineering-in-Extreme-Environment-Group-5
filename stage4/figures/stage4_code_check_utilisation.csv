@@ -1,0 +1,7 @@
+case,check,utilisation_pct,lower_bound
+"Thermal, W = 8 m",Thermal vs S_A,43.9,False
+"Thermal, W = 12 m",Thermal vs S_A,41.5,False
+"Water hammer 0.50 s, W = 8 m",Occasional vs 1.33 S_h,96.1,False
+"Water hammer 0.10 s, W = 8 m",Occasional vs 1.33 S_h,196.0,True
+"Water hammer 0.02 s, W = 8 m",Occasional vs 1.33 S_h,227.9,True
+"Water hammer 0.02 s, W = 12 m",Occasional vs 1.33 S_h,481.8,True
